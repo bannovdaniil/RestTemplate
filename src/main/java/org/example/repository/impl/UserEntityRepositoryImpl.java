@@ -1,22 +1,23 @@
 package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
-import org.example.model.SimpleEntity;
-import org.example.repository.SimpleEntityRepository;
-import org.example.repository.mapper.SimpleResultSetMapper;
+import org.example.model.User;
+import org.example.repository.UserEntityRepository;
+import org.example.repository.mapper.UserResultSetMapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
-public class SimpleEntityRepositoryImpl implements SimpleEntityRepository {
-    private SimpleResultSetMapper resultSetMapper;
+public class UserEntityRepositoryImpl implements UserEntityRepository {
+    private UserResultSetMapper resultSetMapper;
     private ConnectionManager connectionManager;
 
     @Override
-    public SimpleEntity findById(UUID id) {
+    public User findById(UUID id) {
         // Здесь используем try with resources
         try {
             Connection connection = connectionManager.getConnection();
@@ -35,12 +36,13 @@ public class SimpleEntityRepositoryImpl implements SimpleEntityRepository {
     }
 
     @Override
-    public SimpleEntity findAll() {
+    public List<User> findAll() {
         return null;
     }
 
     @Override
-    public SimpleEntity save(SimpleEntity simpleEntity) {
+    public User save(User user) {
         return null;
     }
+
 }

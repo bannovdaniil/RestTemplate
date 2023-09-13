@@ -1,11 +1,13 @@
 package org.example.repository;
 
-public interface SimpleRepository<T, K> {
+import java.util.List;
+
+public interface UserRepository<T, K> {
     T findById(K id);
 
     boolean deleteById(K id);
 
-    T findAll();
+    List<T> findAll();
 
     T save(T t);
 }
