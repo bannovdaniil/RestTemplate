@@ -1,11 +1,11 @@
 package org.example.service;
 
-import org.example.model.SimpleEntity;
+import org.example.model.User;
 
 import java.util.UUID;
 
 public interface SimpleService {
-    SimpleEntity save(SimpleEntity simpleEntity);
+    User save(User user);
 
-    SimpleEntity findById(UUID uuid);
+    User findById(UUID uuid);
 }

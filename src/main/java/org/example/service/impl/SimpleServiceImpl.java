@@ -1,18 +1,18 @@
 package org.example.service.impl;
 
-import org.example.model.SimpleEntity;
+import org.example.model.User;
 import org.example.service.SimpleService;
 
 import java.util.UUID;
 
 public class SimpleServiceImpl implements SimpleService {
     @Override
-    public SimpleEntity save(SimpleEntity simpleEntity) {
+    public User save(User user) {
         return null;
     }
 
     @Override
-    public SimpleEntity findById(UUID uuid) {
+    public User findById(UUID uuid) {
         return null;
     }
 }
