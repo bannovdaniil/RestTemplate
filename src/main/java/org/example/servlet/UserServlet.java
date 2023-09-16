@@ -5,24 +5,22 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.model.User;
-import org.example.service.SimpleService;
 
 import java.io.IOException;
-import java.util.UUID;
 
 
-@WebServlet(name = "SimpleServlet", value = "/simple")
-public class SimpleServlet extends HttpServlet {
-    private SimpleService service;
+@WebServlet(urlPatterns = {"/user"}, name = "Rest")
+public class UserServlet extends HttpServlet {
+//    private UserService service;
     //   private SimpleDtomapper dtomapper;
 
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UUID uuid = UUID.randomUUID();// Our Id from request
-        User byId = service.findById(uuid);
-        //       OutGoingDto outGoingDto = dtomapper.map(byId);
-        // return our DTO
+    protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/plain;charset=UTF-8");
+        var out = response.getOutputStream();
+
+        out.print("Hello there from Servlet");
     }
 
     @Override

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SimpleServletTest {
+class UserServletTest {
     //мокаем сервис и другие зависимости
     // проевряем логику роута на нужные метода
 
