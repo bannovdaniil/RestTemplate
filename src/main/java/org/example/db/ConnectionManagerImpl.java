@@ -1,12 +1,16 @@
 package org.example.db;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
+import org.example.util.PropertiesUtil;
 
-public class ConnectionManagerImpl implements ConnectionManager {
-    private Connection connection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public final class ConnectionManagerImpl implements ConnectionManager {
+    private final static String DRIVER_CLASS_KEY = "db.driver-class-name";
+    private final static String URL_KEY = "db.url";
+    private final static String USERNAME_KEY = "db.username";
+    private final static String PASSWORD_KEY = "db.password";
     private static ConnectionManager INSTANCE;
 
     private ConnectionManagerImpl() {
@@ -15,30 +19,26 @@ public class ConnectionManagerImpl implements ConnectionManager {
     public static synchronized ConnectionManager getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ConnectionManagerImpl();
+            loadDriver(PropertiesUtil.getProperties(DRIVER_CLASS_KEY));
         }
         return INSTANCE;
     }
 
-    @Override
-    public Connection getConnection() throws SQLException {
-        if (connection == null) {
-            Properties properties = loadProperties();
-
-
-            this.connection = connection;
+    private static void loadDriver(String driverClass) {
+        try {
+            Class.forName(driverClass);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
-
-        return connection;
     }
 
-    private static Properties loadProperties() {
-        var properties = new Properties();
-        try (InputStream in = ConnectionManagerImpl.class.getClassLoader().getResourceAsStream("db.properties")) {
-            properties.load(in);
-        } catch (Exception e) {
-            throw new IllegalStateException();
-        }
-        return properties;
+    @Override
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+                PropertiesUtil.getProperties(URL_KEY),
+                PropertiesUtil.getProperties(USERNAME_KEY),
+                PropertiesUtil.getProperties(PASSWORD_KEY)
+        );
     }
 
 }
