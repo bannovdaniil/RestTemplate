@@ -23,13 +23,14 @@ services:
     restart: always
     volumes:
       - /var/lib/postgresql/data/
-      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+      - ./src/main/resources/sql:/docker-entrypoint-initdb.d
+
     ports:
       - 6580:5432
     # переменные окружения
     environment:
       POSTGRES_DB: users_db
-      POSTGRES_USER: postgres
+      POSTGRES_USER: sa
       POSTGRES_PASSWORD: password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]

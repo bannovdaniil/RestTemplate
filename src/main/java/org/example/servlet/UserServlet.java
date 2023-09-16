@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.model.User;
 import org.example.service.UserService;
 import org.example.service.impl.UserServiceImpl;
 import org.example.servlet.mapper.UserDtoMapper;
@@ -20,7 +21,7 @@ public class UserServlet extends HttpServlet {
     private final UserDtoMapper userDtoMapper;
 
     public UserServlet() {
-        this.userService = new UserServiceImpl();
+        this.userService = UserServiceImpl.getInstance();
         this.userDtoMapper = new UserDtoMapperImpl();
     }
 
@@ -31,6 +32,7 @@ public class UserServlet extends HttpServlet {
         out.print("Get Method \n");
         out.println(LocalDateTime.now().toString());
         out.close();
+        userService.save(new User());
     }
 
     @Override
