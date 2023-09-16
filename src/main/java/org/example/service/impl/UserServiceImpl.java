@@ -1,11 +1,11 @@
 package org.example.service.impl;
 
 import org.example.model.User;
-import org.example.service.SimpleService;
+import org.example.service.UserService;
 
 import java.util.UUID;
 
-public class SimpleServiceImpl implements SimpleService {
+public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         return null;

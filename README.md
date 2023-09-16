@@ -15,3 +15,9 @@
 14)	Слой сервлетов, сервисный слой тестировать с помощью Mockito
 15)	БД на выбор Pestgres, MySQL
 16)	Ставим плагин SonarLint
+
+Execution:
+docker build -t rest .
+docker run -itd -p 8080:8080 rest
+
+http://localhost:8080/Rest/user
