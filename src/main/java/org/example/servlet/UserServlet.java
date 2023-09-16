@@ -5,29 +5,39 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.service.UserService;
+import org.example.service.impl.UserServiceImpl;
+import org.example.servlet.mapper.UserDtoMapper;
+import org.example.servlet.mapper.UserDtoMapperImpl;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 
-@WebServlet(urlPatterns = {"/user"}, name = "Rest")
+@WebServlet(urlPatterns = {"/user"})
 public class UserServlet extends HttpServlet {
-//    private UserService service;
-    //   private SimpleDtomapper dtomapper;
+    private final UserService userService;
+    private final UserDtoMapper userDtoMapper;
 
+    public UserServlet() {
+        this.userService = new UserServiceImpl();
+        this.userDtoMapper = new UserDtoMapperImpl();
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/plain;charset=UTF-8");
-        var out = response.getOutputStream();
-
-        out.print("Hello there from Servlet");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/plain;charset=UTF-8");
+        var out = resp.getOutputStream();
+        out.print("Get Method \n");
+        out.println(LocalDateTime.now().toString());
+        out.close();
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //    SimpleEntity simpleEntity = dtomapper.map(new IncomingDto());
-        //      SimpleEntity saved = service.save(simpleEntity);
-        //      OutGoingDto map = dtomapper.map(saved);
-        // return our DTO, not necessary
+        resp.setContentType("text/plain;charset=UTF-8");
+        var out = resp.getOutputStream();
+        out.print("Post Method");
+        out.close();
     }
 }
