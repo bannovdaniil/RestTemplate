@@ -1,6 +1,7 @@
 package org.example.servlet.mapper;
 
 import org.example.model.PhoneNumber;
+import org.example.model.Role;
 import org.example.model.User;
 import org.example.servlet.dto.*;
 
@@ -9,14 +10,14 @@ import java.util.List;
 public class UserDtoMapperImpl implements UserDtoMapper {
     @Override
     public User map(UserIncomingDto userIncomingDto,
-                    Long roleId,
+                    Role role,
                     List<PhoneNumber> phoneNumberList,
                     List<Long> departmentIdList) {
         return new User(
                 null,
                 userIncomingDto.getFirstName(),
                 userIncomingDto.getLastName(),
-                roleId,
+                role,
                 phoneNumberList,
                 departmentIdList
         );

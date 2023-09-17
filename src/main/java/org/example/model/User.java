@@ -15,18 +15,18 @@ public class User {
     private String firstName;
     private String lastName;
 
-    private Long roleId;
+    private Role role;
     private List<PhoneNumber> phoneNumberList;
     private List<Long> departmentIdList;
 
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, Long roleId, List<PhoneNumber> phoneNumberList, List<Long> departmentIdList) {
+    public User(Long id, String firstName, String lastName, Role role, List<PhoneNumber> phoneNumberList, List<Long> departmentIdList) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.roleId = roleId;
+        this.role = role;
         this.phoneNumberList = phoneNumberList;
         this.departmentIdList = departmentIdList;
     }
@@ -55,12 +55,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public List<PhoneNumber> getPhoneNumberList() {
@@ -85,7 +85,7 @@ public class User {
                "id=" + id +
                ", firstName='" + firstName + '\'' +
                ", lastName='" + lastName + '\'' +
-               ", roleId=" + roleId +
+               ", role=" + role +
                ", phoneNumberList=" + phoneNumberList +
                ", departmentIdList=" + departmentIdList +
                '}';
