@@ -27,28 +27,28 @@ public class RoleRepositoryImpl implements RoleRepository {
 
     private static final String SAVE_SQL = """
             INSERT INTO roles (role_name)
-            VALUES (?) ;           
+            VALUES (?) ;
             """;
 
     private static final String UPDATE_SQL = """
             UPDATE roles
             SET role_name = ?
-            WHERE role_id = ?  ;             
+            WHERE role_id = ?  ;
             """;
 
     private static final String DELETE_SQL = """
             DELETE FROM roles
-            WHERE role_id = ? ;             
+            WHERE role_id = ? ;
             """;
 
     private static final String FIND_BY_ID_SQL = """
             SELECT role_id, role_name FROM roles
-            WHERE role_id = ? 
-            LIMIT 1;          
+            WHERE role_id = ?
+            LIMIT 1;
             """;
 
     private static final String FIND_ALL_SQL = """
-            SELECT role_id, role_name FROM roles ;  
+            SELECT role_id, role_name FROM roles ;
             """;
 
     @Override
@@ -87,7 +87,7 @@ public class RoleRepositoryImpl implements RoleRepository {
 
     @Override
     public boolean deleteById(Long id) {
-        boolean deleteResult = true;
+        boolean deleteResult;
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL);) {
 

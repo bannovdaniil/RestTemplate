@@ -27,24 +27,24 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
 
     private static final String SAVE_SQL = """
             INSERT INTO departments (department_name)
-            VALUES (?);           
+            VALUES (?);
             """;
 
     private static final String UPDATE_SQL = """
             UPDATE departments
             SET department_name = ?
-            WHERE department_id = ?; 
+            WHERE department_id = ?;
             """;
 
     private static final String DELETE_SQL = """
             DELETE FROM departments
-            WHERE department_id = ?;            
+            WHERE department_id = ?;
             """;
 
     private static final String FIND_BY_ID_SQL = """
             SELECT department_id, department_name FROM departments
             WHERE department_id = ?
-            LIMIT 1;          
+            LIMIT 1;
             """;
 
     private static final String FIND_ALL_SQL = """
