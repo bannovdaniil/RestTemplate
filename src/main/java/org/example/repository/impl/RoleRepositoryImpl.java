@@ -86,12 +86,12 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
-    public boolean deleteById(Long roleId) {
+    public boolean deleteById(Long id) {
         boolean deleteResult = true;
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL);) {
 
-            preparedStatement.setLong(1, roleId);
+            preparedStatement.setLong(1, id);
 
             deleteResult = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -102,12 +102,12 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
-    public Optional<Role> findById(Long roleId) {
+    public Optional<Role> findById(Long id) {
         Role role = null;
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
 
-            preparedStatement.setLong(1, roleId);
+            preparedStatement.setLong(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
