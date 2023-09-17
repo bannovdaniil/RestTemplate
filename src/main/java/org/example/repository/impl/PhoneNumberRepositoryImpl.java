@@ -41,10 +41,14 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             DELETE FROM phonenumbers
             WHERE phonenumber_id = ?;
             """;
-
     private static final String FIND_BY_ID_SQL = """
             SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers
             WHERE phonenumber_id = ?
+            LIMIT 1;
+            """;
+    private static final String FIND_BY_NUMBER_SQL = """
+            SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers
+            WHERE phonenumber_number = ?
             LIMIT 1;
             """;
     private static final String EXIST_BY_NUMBER_SQL = """
@@ -158,6 +162,24 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             throw new RepositoryException(e);
         }
         return isExists;
+    }
+
+    @Override
+    public Optional<PhoneNumber> findByNumber(String number) {
+        PhoneNumber phoneNumber = null;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NUMBER_SQL)) {
+
+            preparedStatement.setString(1, number);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                phoneNumber = createPhoneNumber(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return Optional.ofNullable(phoneNumber);
     }
 
     @Override

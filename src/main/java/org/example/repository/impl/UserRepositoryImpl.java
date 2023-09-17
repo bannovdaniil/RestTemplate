@@ -12,6 +12,7 @@ import org.example.repository.exception.RepositoryException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
@@ -154,13 +155,13 @@ public class UserRepositoryImpl implements UserRepository {
                 if (existsPhoneNumberIdList.contains(phoneNumber.getId())) {
                     phoneNumberRepository.update(phoneNumber);
                 } else {
-                    phoneNumberRepository.save(phoneNumber);
+                    saveOrUpdateExitsNumber(phoneNumber);
                 }
                 phoneNumberList.set(i, null);
             }
-            phoneNumberList.removeAll(null);
             phoneNumberList
                     .stream()
+                    .filter(Objects::nonNull)
                     .forEach(phoneNumber -> {
                         phoneNumber.setUserId(user.getId());
                         phoneNumberRepository.save(phoneNumber);
@@ -169,6 +170,18 @@ public class UserRepositoryImpl implements UserRepository {
             phoneNumberRepository.deleteByUserId(user.getId());
         }
 
+    }
+
+    private void saveOrUpdateExitsNumber(PhoneNumber phoneNumber) {
+        if (phoneNumberRepository.existsByNumber(phoneNumber.getNumber())) {
+            Optional<PhoneNumber> exitNumber = phoneNumberRepository.findByNumber(phoneNumber.getNumber());
+            if (exitNumber.isPresent() && exitNumber.get().getUserId() == 0) {
+                phoneNumber.setId(exitNumber.get().getId());
+                phoneNumberRepository.update(phoneNumber);
+            }
+        } else {
+            phoneNumberRepository.save(phoneNumber);
+        }
     }
 
     @Override
