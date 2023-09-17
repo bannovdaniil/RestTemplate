@@ -45,6 +45,14 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
             SELECT users_departments_id, user_id, department_id FROM users_departments
             WHERE department_id = ?;
             """;
+    private static final String DELETE_BY_USERID_SQL = """
+            DELETE FROM users_departments
+            WHERE user_id = ?;
+            """;
+    private static final String DELETE_BY_DEPARTMENT_ID_SQL = """
+            DELETE FROM users_departments
+            WHERE department_id = ?;
+            """;
 
 
     private UserToDepartmentRepositoryImpl() {
@@ -108,6 +116,39 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
 
         return deleteResult;
     }
+
+    @Override
+    public boolean deleteByUserId(Long userId) {
+        boolean deleteResult;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_USERID_SQL);) {
+
+            preparedStatement.setLong(1, userId);
+
+            deleteResult = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+
+        return deleteResult;
+    }
+
+    @Override
+    public boolean deleteByDepartmentId(Long departmentId) {
+        boolean deleteResult;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_DEPARTMENT_ID_SQL);) {
+
+            preparedStatement.setLong(1, departmentId);
+
+            deleteResult = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+
+        return deleteResult;
+    }
+
 
     @Override
     public Optional<UserToDepartment> findById(Long id) {

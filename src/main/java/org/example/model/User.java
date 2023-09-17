@@ -1,7 +1,6 @@
 package org.example.model;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * User entity
@@ -12,32 +11,32 @@ import java.util.UUID;
  * Many To One: User -> Role
  */
 public class User {
-    private UUID uuid;
+    private Long id;
     private String firstName;
     private String lastName;
 
-    private Role role;
+    private Long roleId;
     private List<PhoneNumber> phoneNumberList;
-    private List<Department> departmentList;
+    private List<Long> departmentIdList;
 
     public User() {
     }
 
-    public User(UUID uuid, String firstName, String lastName, Role role, List<PhoneNumber> phoneNumberList, List<Department> departmentList) {
-        this.uuid = uuid;
+    public User(Long id, String firstName, String lastName, Long roleId, List<PhoneNumber> phoneNumberList, List<Long> departmentIdList) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.role = role;
+        this.roleId = roleId;
         this.phoneNumberList = phoneNumberList;
-        this.departmentList = departmentList;
+        this.departmentIdList = departmentIdList;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public Long getId() {
+        return id;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -56,12 +55,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public Role getRole() {
-        return role;
+    public Long getRoleId() {
+        return roleId;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 
     public List<PhoneNumber> getPhoneNumberList() {
@@ -72,11 +71,23 @@ public class User {
         this.phoneNumberList = phoneNumberList;
     }
 
-    public List<Department> getDepartmentList() {
-        return departmentList;
+    public List<Long> getDepartmentIdList() {
+        return departmentIdList;
     }
 
-    public void setDepartmentList(List<Department> departmentList) {
-        this.departmentList = departmentList;
+    public void setDepartmentIdList(List<Long> departmentIdList) {
+        this.departmentIdList = departmentIdList;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+               "id=" + id +
+               ", firstName='" + firstName + '\'' +
+               ", lastName='" + lastName + '\'' +
+               ", roleId=" + roleId +
+               ", phoneNumberList=" + phoneNumberList +
+               ", departmentIdList=" + departmentIdList +
+               '}';
     }
 }

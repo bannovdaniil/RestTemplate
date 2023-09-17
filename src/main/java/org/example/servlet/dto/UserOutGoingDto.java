@@ -1,10 +1,9 @@
 package org.example.servlet.dto;
 
 import java.util.List;
-import java.util.UUID;
 
 public class UserOutGoingDto {
-    private UUID uuid;
+    private Long id;
     private String firstName;
     private String lastName;
 
@@ -15,8 +14,8 @@ public class UserOutGoingDto {
     public UserOutGoingDto() {
     }
 
-    public UserOutGoingDto(UUID uuid, String firstName, String lastName, RoleOutGoingDto role, List<PhoneNumberOutGoingDto> phoneNumberList, List<DepartmentOutGoingDto> departmentList) {
-        this.uuid = uuid;
+    public UserOutGoingDto(Long id, String firstName, String lastName, RoleOutGoingDto role, List<PhoneNumberOutGoingDto> phoneNumberList, List<DepartmentOutGoingDto> departmentList) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
@@ -24,12 +23,12 @@ public class UserOutGoingDto {
         this.departmentList = departmentList;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public Long getId() {
+        return id;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
