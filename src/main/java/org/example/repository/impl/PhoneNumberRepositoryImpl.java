@@ -47,7 +47,22 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             WHERE phonenumber_id = ?
             LIMIT 1;
             """;
-
+    private static final String EXIST_BY_ID_SQL = """
+            SELECT exists (
+                SELECT 1 
+                    FROM phonenumbers
+                        WHERE phonenumber_number = LOWER(?)
+                        LIMIT 1
+            );
+            """;
+    private static final String FIND_ALL_BY_USERID_SQL = """
+            SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers
+            WHERE user_id = ?;
+            """;
+    private static final String DELETE_ALL_BY_USERID_SQL = """
+            DELETE FROM phonenumbers
+            WHERE user_id = ?;
+            """;
     private static final String FIND_ALL_SQL = """
             SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers;
             """;
@@ -112,6 +127,40 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
     }
 
     @Override
+    public boolean deleteByUserId(Long userId) {
+        boolean deleteResult;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_ALL_BY_USERID_SQL);) {
+
+            preparedStatement.setLong(1, userId);
+
+            deleteResult = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+
+        return deleteResult;
+    }
+
+    @Override
+    public boolean existsByNumber(String number) {
+        boolean isExists = false;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_ID_SQL)) {
+
+            preparedStatement.setString(1, number);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                isExists = resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return isExists;
+    }
+
+    @Override
     public Optional<PhoneNumber> findById(Long id) {
         PhoneNumber phoneNumber = null;
         try (Connection connection = connectionManager.getConnection();
@@ -146,6 +195,24 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
+                phoneNumberList.add(createPhoneNumber(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return phoneNumberList;
+    }
+
+    @Override
+    public List<PhoneNumber> findAllByUserId(Long userId) {
+        List<PhoneNumber> phoneNumberList = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USERID_SQL)) {
+
+            preparedStatement.setLong(1, userId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
                 phoneNumberList.add(createPhoneNumber(resultSet));
             }
         } catch (SQLException e) {
