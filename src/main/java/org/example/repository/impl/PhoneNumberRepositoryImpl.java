@@ -47,7 +47,7 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             WHERE phonenumber_id = ?
             LIMIT 1;
             """;
-    private static final String EXIST_BY_ID_SQL = """
+    private static final String EXIST_BY_NUMBER_SQL = """
             SELECT exists (
                 SELECT 1 
                     FROM phonenumbers
@@ -146,7 +146,7 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
     public boolean existsByNumber(String number) {
         boolean isExists = false;
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_ID_SQL)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_NUMBER_SQL)) {
 
             preparedStatement.setString(1, number);
 
