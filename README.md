@@ -17,7 +17,8 @@
 16)	Ставим плагин SonarLint
 
 Execution:
-docker build -t rest .
-docker run -itd -p 8080:8080 rest
+docker-compose down
+docker-compose build
+docker-compose up -d
 
-http://localhost:8080/Rest/user
+http://localhost:8080/user

@@ -2,22 +2,21 @@ package org.example.model;
 
 /**
  * The Phone Number of User
- *
  * Relation:
  * One To One: PhoneNumber - User
  */
 public class PhoneNumber {
     private Long id;
     private String number;
-    private User user;
+    private Long userId;
 
     public PhoneNumber() {
     }
 
-    public PhoneNumber(Long id, String number, User user) {
+    public PhoneNumber(Long id, String number, Long userId) {
         this.id = id;
         this.number = number;
-        this.user = user;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -36,11 +35,20 @@ public class PhoneNumber {
         this.number = number;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return "PhoneNumber{" +
+               "id=" + id +
+               ", number='" + number + '\'' +
+               ", userId=" + userId +
+               '}';
     }
 }

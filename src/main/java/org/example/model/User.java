@@ -1,7 +1,6 @@
 package org.example.model;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * User entity
@@ -12,32 +11,32 @@ import java.util.UUID;
  * Many To One: User -> Role
  */
 public class User {
-    private UUID uuid;
+    private Long id;
     private String firstName;
     private String lastName;
 
     private Role role;
     private List<PhoneNumber> phoneNumberList;
-    private List<Department> departmentList;
+    private List<Long> departmentIdList;
 
     public User() {
     }
 
-    public User(UUID uuid, String firstName, String lastName, Role role, List<PhoneNumber> phoneNumberList, List<Department> departmentList) {
-        this.uuid = uuid;
+    public User(Long id, String firstName, String lastName, Role role, List<PhoneNumber> phoneNumberList, List<Long> departmentIdList) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
         this.phoneNumberList = phoneNumberList;
-        this.departmentList = departmentList;
+        this.departmentIdList = departmentIdList;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public Long getId() {
+        return id;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -72,11 +71,23 @@ public class User {
         this.phoneNumberList = phoneNumberList;
     }
 
-    public List<Department> getDepartmentList() {
-        return departmentList;
+    public List<Long> getDepartmentIdList() {
+        return departmentIdList;
     }
 
-    public void setDepartmentList(List<Department> departmentList) {
-        this.departmentList = departmentList;
+    public void setDepartmentIdList(List<Long> departmentIdList) {
+        this.departmentIdList = departmentIdList;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+               "id=" + id +
+               ", firstName='" + firstName + '\'' +
+               ", lastName='" + lastName + '\'' +
+               ", role=" + role +
+               ", phoneNumberList=" + phoneNumberList +
+               ", departmentIdList=" + departmentIdList +
+               '}';
     }
 }

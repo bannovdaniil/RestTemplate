@@ -1,13 +1,6 @@
 package org.example.repository;
 
-import java.util.List;
+import org.example.model.User;
 
-public interface UserRepository<T, K> {
-    T findById(K id);
-
-    boolean deleteById(K id);
-
-    List<T> findAll();
-
-    T save(T t);
+public interface UserRepository extends Repository<User, Long> {
 }

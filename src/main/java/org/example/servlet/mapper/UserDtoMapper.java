@@ -1,6 +1,5 @@
 package org.example.servlet.mapper;
 
-import org.example.model.Department;
 import org.example.model.PhoneNumber;
 import org.example.model.Role;
 import org.example.model.User;
@@ -12,7 +11,7 @@ public interface UserDtoMapper {
     User map(UserIncomingDto userIncomingDto,
              Role role,
              List<PhoneNumber> phoneNumberList,
-             List<Department> departmentList);
+             List<Long> departmentIdList);
 
     UserOutGoingDto map(User user,
                         RoleOutGoingDto role,
