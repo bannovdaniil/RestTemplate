@@ -101,12 +101,12 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL);) {
 
             preparedStatement.setString(1, phoneNumber.getNumber());
-            preparedStatement.setLong(2, phoneNumber.getId());
             if (phoneNumber.getUserId() == null) {
-                preparedStatement.setNull(3, Types.NULL);
+                preparedStatement.setNull(2, Types.NULL);
             } else {
-                preparedStatement.setLong(3, phoneNumber.getUserId());
+                preparedStatement.setLong(2, phoneNumber.getUserId());
             }
+            preparedStatement.setLong(3, phoneNumber.getId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -234,7 +234,7 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             preparedStatement.setLong(1, userId);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 phoneNumberList.add(createPhoneNumber(resultSet));
             }
         } catch (SQLException e) {
