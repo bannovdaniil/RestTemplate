@@ -4,22 +4,21 @@ import java.util.List;
 
 /**
  * The Department where User work
- *
  * Relation:
  * Many To Many: Department <-> User
  */
 public class Department {
     private Long id;
     private String name;
-    private List<User> userList;
+    private List<Long> userIdList;
 
     public Department() {
     }
 
-    public Department(Long id, String name, List<User> userList) {
+    public Department(Long id, String name, List<Long> userIdList) {
         this.id = id;
         this.name = name;
-        this.userList = userList;
+        this.userIdList = userIdList;
     }
 
     public Long getId() {
@@ -38,11 +37,20 @@ public class Department {
         this.name = name;
     }
 
-    public List<User> getUserList() {
-        return userList;
+    public List<Long> getUserIdList() {
+        return userIdList;
     }
 
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
+    public void setUserIdList(List<Long> userIdList) {
+        this.userIdList = userIdList;
+    }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", userIdList=" + userIdList +
+               '}';
     }
 }
