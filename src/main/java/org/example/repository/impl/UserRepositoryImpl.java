@@ -6,10 +6,7 @@ import org.example.model.PhoneNumber;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.model.UserToDepartment;
-import org.example.repository.PhoneNumberRepository;
-import org.example.repository.RoleRepository;
-import org.example.repository.UserRepository;
-import org.example.repository.UserToDepartmentRepository;
+import org.example.repository.*;
 import org.example.repository.exception.RepositoryException;
 
 import java.sql.*;
@@ -23,6 +20,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
     private final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
     private final RoleRepository roleRepository = RoleRepositoryImpl.getInstance();
+    private final DepartmentRepository departmentRepository = DepartmentRepositoryImpl.getInstance();
 
     private UserRepositoryImpl() {
     }
@@ -119,12 +117,14 @@ public class UserRepositoryImpl implements UserRepository {
                 departmentIdList.remove(userToDepartment.getUserId());
             }
             for (Long departmentId : departmentIdList) {
-                UserToDepartment userToDepartment = new UserToDepartment(
-                        null,
-                        user.getId(),
-                        departmentId
-                );
-                userToDepartmentRepository.save(userToDepartment);
+                if (departmentRepository.exitsById(departmentId)) {
+                    UserToDepartment userToDepartment = new UserToDepartment(
+                            null,
+                            user.getId(),
+                            departmentId
+                    );
+                    userToDepartmentRepository.save(userToDepartment);
+                }
             }
 
         } else {
@@ -186,6 +186,8 @@ public class UserRepositoryImpl implements UserRepository {
             preparedStatement.setLong(4, user.getId());
 
             preparedStatement.executeUpdate();
+            savePhoneNumberList(user);
+            saveDepartmentList(user);
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
@@ -247,7 +249,7 @@ public class UserRepositoryImpl implements UserRepository {
         Role role = roleRepository.findById(resultSet.getLong("role_id")).orElse(null);
         List<PhoneNumber> phoneNumberList = phoneNumberRepository.findAllByUserId(userId);
         List<Long> userDepartmentIdList = userToDepartmentRepository
-                .findAll()
+                .findAllByUserId(userId)
                 .stream()
                 .map(UserToDepartment::getDepartmentId)
                 .toList();
