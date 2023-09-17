@@ -34,6 +34,6 @@ CREATE TABLE IF NOT EXISTS users_departments
 CREATE TABLE IF NOT EXISTS phonenumbers
 (
     phonenumber_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    phonenumber_number         VARCHAR(255) NOT NULL,
+    phonenumber_number         VARCHAR(255) NOT NULL UNIQUE,
     user_id        BIGINT REFERENCES users (user_id)
 );
