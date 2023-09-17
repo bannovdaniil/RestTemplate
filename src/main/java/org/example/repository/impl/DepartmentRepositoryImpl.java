@@ -51,6 +51,14 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
             SELECT department_id, department_name FROM departments;
             """;
 
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM departments
+                        WHERE department_id = ?
+                        LIMIT 1);
+            """;
+
     @Override
     public Department save(Department department) {
         try (Connection connection = connectionManager.getConnection();
@@ -142,5 +150,23 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
             throw new RepositoryException(e);
         }
         return roleList;
+    }
+
+    @Override
+    public boolean exitsById(Long departmentId) {
+        boolean isExists = false;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_ID_SQL)) {
+
+            preparedStatement.setLong(1, departmentId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                isExists = resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return isExists;
     }
 }
