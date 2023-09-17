@@ -1,11 +1,16 @@
 package org.example.service;
 
 import org.example.model.User;
+import org.example.repository.exception.NotFoundException;
 
-import java.util.UUID;
+import java.util.List;
 
 public interface UserService {
     User save(User user);
 
-    User findById(UUID uuid);
+    void update(User user);
+
+    User findById(Long userId) throws NotFoundException;
+
+    List<User> findAll();
 }

@@ -1,42 +1,47 @@
 package org.example.service.impl;
 
-import org.example.db.ConnectionManager;
-import org.example.db.ConnectionManagerImpl;
 import org.example.model.User;
+import org.example.repository.UserRepository;
+import org.example.repository.exception.NotFoundException;
+import org.example.repository.impl.UserRepositoryImpl;
 import org.example.service.UserService;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.UUID;
+import java.util.List;
 
 public class UserServiceImpl implements UserService {
-    private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
-    private static UserService INSTANCE;
+    private final UserRepository userRepository = UserRepositoryImpl.getInstance();
+    private static UserService instance;
 
 
     private UserServiceImpl() {
     }
 
     public static synchronized UserService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new UserServiceImpl();
+        if (instance == null) {
+            instance = new UserServiceImpl();
         }
-        return INSTANCE;
+        return instance;
     }
 
     @Override
     public User save(User user) {
-        try {
-            Connection connection = connectionManager.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
+        return userRepository.save(user);
     }
 
     @Override
-    public User findById(UUID uuid) {
-        return null;
+    public void update(User user) {
+        userRepository.update(user);
     }
+
+    @Override
+    public User findById(Long userId) throws NotFoundException {
+        return userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Not found."));
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
 }
