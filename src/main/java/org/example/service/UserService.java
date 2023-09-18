@@ -13,4 +13,6 @@ public interface UserService {
     User findById(Long userId) throws NotFoundException;
 
     List<User> findAll();
+
+    boolean delete(Long userId);
 }

@@ -36,12 +36,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long userId) throws NotFoundException {
         return userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("Not found."));
+                new NotFoundException("User not found."));
     }
 
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public boolean delete(Long userId) {
+        return userRepository.deleteById(userId);
     }
 
 }
