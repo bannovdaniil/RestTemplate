@@ -10,7 +10,7 @@ import java.util.List;
 public interface RoleService {
     RoleOutGoingDto save(RoleIncomingDto role);
 
-    void update(RoleUpdateDto role);
+    void update(RoleUpdateDto role) throws NotFoundException;
 
     RoleOutGoingDto findById(Long roleID) throws NotFoundException;
 

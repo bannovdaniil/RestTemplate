@@ -22,7 +22,6 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/role/*"})
 public class RoleServlet extends HttpServlet {
-    private static final String ROLE_ID_PARAM = "roleId";
     private final RoleService roleService;
     private final ObjectMapper objectMapper;
 
@@ -39,21 +38,15 @@ public class RoleServlet extends HttpServlet {
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
-            switch (pathPart[1]) {
-                case "all":
-                    List<RoleOutGoingDto> roleDtoList = roleService.findAll();
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    responseAnswer = objectMapper.writeValueAsString(roleDtoList);
-                    break;
-                case ROLE_ID_PARAM:
-                    Long roleId = Long.parseLong(pathPart[2]);
-                    RoleOutGoingDto roleDto = roleService.findById(roleId);
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    responseAnswer = objectMapper.writeValueAsString(roleDto);
-                    break;
-                default:
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    responseAnswer = "Illegal argument.";
+            if ("all".equals(pathPart[1])) {
+                List<RoleOutGoingDto> roleDtoList = roleService.findAll();
+                resp.setStatus(HttpServletResponse.SC_OK);
+                responseAnswer = objectMapper.writeValueAsString(roleDtoList);
+            } else {
+                Long roleId = Long.parseLong(pathPart[1]);
+                RoleOutGoingDto roleDto = roleService.findById(roleId);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                responseAnswer = objectMapper.writeValueAsString(roleDto);
             }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -73,18 +66,13 @@ public class RoleServlet extends HttpServlet {
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
-
-            if (pathPart[1].equals(ROLE_ID_PARAM)) {
-                Long roleId = Long.parseLong(pathPart[2]);
-                if (roleService.delete(roleId)) {
-                    resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                }
+            Long roleId = Long.parseLong(pathPart[1]);
+            if (roleService.delete(roleId)) {
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                responseAnswer = "Illegal argument.";
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
+
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
@@ -125,6 +113,9 @@ public class RoleServlet extends HttpServlet {
             roleResponse = Optional.ofNullable(objectMapper.readValue(json, RoleUpdateDto.class));
             RoleUpdateDto roleUpdateDto = roleResponse.orElseThrow(IllegalArgumentException::new);
             roleService.update(roleUpdateDto);
+        } catch (NotFoundException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            responseAnswer = e.getMessage();
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Incorrect role Object.";
