@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "2e0b8d58-7b02-4c72-85e9-6df1aebd00bb",
+		"name": "Servlet tester",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21191133"
+	},
+	"item": [
+		{
+			"name": "Role",
+			"item": [
+				{
+					"name": "Add Role",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/role/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"role",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get role #4",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/role/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"role",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all role",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/role/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"role",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete tole #6",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/role/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"role",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update role name",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 80,\r\n    \"name\": \"5 Edit Admin\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"role"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Add user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"firstName\": \"Иван\",\r\n        \"lastName\": \"Субботин\",\r\n        \"role\": {\r\n            \"id\": 1,\r\n            \"name\": \"Администратор\"\r\n        },\r\n        \"phoneNumberList\": [\r\n            {\r\n                \"id\": 1,\r\n                \"number\": \"+1(123)123 1111\",\r\n                \"userId\": 1\r\n            },\r\n            {\r\n                \"id\": 2,\r\n                \"number\": \"+1(123)123 2222\",\r\n                \"userId\": 1\r\n            }\r\n        ],\r\n        \"departmentIdList\": [\r\n            1\r\n        ]\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/user/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user #1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user #1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/userId/20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"userId",
+								"20"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User #1 phoneNumber + depList",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 1,\r\n        \"firstName\": \"Иван Edit\",\r\n        \"lastName\": \"Субботин Edit\",\r\n        \"role\": {\r\n            \"id\": 2,\r\n        },\r\n        \"phoneNumberList\": [\r\n            {\r\n                \"number\": \"+1(123)222 4444\",\r\n            },\r\n            {\r\n                \"number\": \"+1(123)222 5555\",\r\n            }\r\n        ],\r\n        \"departmentIdList\": [\r\n            1,2\r\n        ]\r\n    }"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/update/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"update",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
