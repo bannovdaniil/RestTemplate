@@ -38,10 +38,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void update(RoleUpdateDto roleUpdateDto) {
-        Role role = roleDtoMapper.map(roleUpdateDto);
-        role = roleRepository.save(role);
-        roleDtoMapper.map(role);
+    public void update(RoleUpdateDto roleUpdateDto) throws NotFoundException {
+        if (roleRepository.exitsById(roleUpdateDto.getId())) {
+            Role role = roleDtoMapper.map(roleUpdateDto);
+            roleRepository.update(role);
+        } else {
+            throw new NotFoundException("Role not found.");
+        }
     }
 
     @Override

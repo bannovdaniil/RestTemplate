@@ -50,6 +50,13 @@ public class RoleRepositoryImpl implements RoleRepository {
     private static final String FIND_ALL_SQL = """
             SELECT role_id, role_name FROM roles ;
             """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM roles
+                        WHERE role_id = ?
+                        LIMIT 1);
+            """;
 
     @Override
     public Role save(Role role) {
@@ -140,5 +147,23 @@ public class RoleRepositoryImpl implements RoleRepository {
             throw new RepositoryException(e);
         }
         return roleList;
+    }
+
+    @Override
+    public boolean exitsById(Long id) {
+        boolean isExists = false;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_ID_SQL)) {
+
+            preparedStatement.setLong(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                isExists = resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return isExists;
     }
 }

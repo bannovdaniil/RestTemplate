@@ -53,6 +53,13 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
             DELETE FROM users_departments
             WHERE department_id = ?;
             """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM users_departments
+                        WHERE users_departments_id = ?
+                        LIMIT 1);
+            """;
 
 
     private UserToDepartmentRepositoryImpl() {
@@ -182,6 +189,24 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
             throw new RepositoryException(e);
         }
         return userToDepartmentList;
+    }
+
+    @Override
+    public boolean exitsById(Long id) {
+        boolean isExists = false;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_ID_SQL)) {
+
+            preparedStatement.setLong(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                isExists = resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return isExists;
     }
 
     public List<UserToDepartment> findAllByUserId(Long userId) {

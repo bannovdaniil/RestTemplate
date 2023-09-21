@@ -60,6 +60,13 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String FIND_ALL_SQL = """
             SELECT user_id, user_firstname, user_lastname, role_id FROM users;
             """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM users
+                        WHERE user_id = ?
+                        LIMIT 1);
+            """;
 
     /**
      * Сохранят в базу сущность пользователя,
@@ -255,6 +262,24 @@ public class UserRepositoryImpl implements UserRepository {
             throw new RepositoryException(e);
         }
         return userList;
+    }
+
+    @Override
+    public boolean exitsById(Long id) {
+        boolean isExists = false;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_ID_SQL)) {
+
+            preparedStatement.setLong(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                isExists = resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return isExists;
     }
 
     private User createUser(ResultSet resultSet) throws SQLException {
