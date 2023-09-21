@@ -9,12 +9,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.repository.exception.NotFoundException;
 import org.example.service.RoleService;
 import org.example.service.impl.RoleServiceImpl;
+import org.example.servlet.dto.RoleIncomingDto;
 import org.example.servlet.dto.RoleOutGoingDto;
+import org.example.servlet.dto.RoleUpdateDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Optional;
 
 
 @WebServlet(urlPatterns = {"/role/*"})
@@ -32,7 +35,6 @@ public class RoleServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
 
-        PrintWriter printWriter = resp.getWriter();
 
         String responseAnswer = "";
         try {
@@ -60,6 +62,7 @@ public class RoleServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
         }
+        PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
         printWriter.flush();
     }
@@ -67,9 +70,6 @@ public class RoleServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
-
-        PrintWriter printWriter = resp.getWriter();
-
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
@@ -89,6 +89,7 @@ public class RoleServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
         }
+        PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
         printWriter.flush();
     }
@@ -98,24 +99,38 @@ public class RoleServlet extends HttpServlet {
         setJsonHeader(resp);
         String json = getJson(req);
 
+        String responseAnswer = null;
+        Optional<RoleIncomingDto> roleResponse;
+        try {
+            roleResponse = Optional.ofNullable(objectMapper.readValue(json, RoleIncomingDto.class));
+            RoleIncomingDto role = roleResponse.orElseThrow(IllegalArgumentException::new);
+            responseAnswer = objectMapper.writeValueAsString(roleService.save(role));
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            responseAnswer = "Incorrect role Object.";
+        }
         PrintWriter printWriter = resp.getWriter();
-        printWriter.println(json);
-        String responseAnswer;
-        String userIdString = req.getParameter(ROLE_ID_PARAM);
+        printWriter.write(responseAnswer);
+        printWriter.flush();
+    }
 
-//        try {
-//            Long roleId = Long.parseLong(userIdString);
-//            roleService.findById(roleId);
-//            resp.setStatus(HttpServletResponse.SC_OK);
-//            responseAnswer = objectMapper.writeValueAsString(user);
-//        } catch (NotFoundException e) {
-//            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//            responseAnswer = e.getMessage();
-//        } catch (NumberFormatException e) {
-//            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            responseAnswer = "Incorrect roleId.";
-//        }
-//        printWriter.write(responseAnswer);
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setJsonHeader(resp);
+        String json = getJson(req);
+
+        String responseAnswer = "";
+        Optional<RoleUpdateDto> roleResponse;
+        try {
+            roleResponse = Optional.ofNullable(objectMapper.readValue(json, RoleUpdateDto.class));
+            RoleUpdateDto roleUpdateDto = roleResponse.orElseThrow(IllegalArgumentException::new);
+            roleService.update(roleUpdateDto);
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            responseAnswer = "Incorrect role Object.";
+        }
+        PrintWriter printWriter = resp.getWriter();
+        printWriter.write(responseAnswer);
         printWriter.flush();
     }
 
@@ -124,17 +139,12 @@ public class RoleServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
     }
 
-
-    private static String getJson(HttpServletRequest req) {
+    private static String getJson(HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder();
-        try {
-            BufferedReader postData = req.getReader();
-            String line;
-            while ((line = postData.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        BufferedReader postData = req.getReader();
+        String line;
+        while ((line = postData.readLine()) != null) {
+            sb.append(line);
         }
         return sb.toString();
     }
