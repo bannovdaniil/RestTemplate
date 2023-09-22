@@ -1,9 +1,12 @@
 package org.example.servlet.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PhoneNumberOutGoingDto {
     private Long id;
     private String number;
+    @JsonProperty("user")
     private UserSmallOutGoingDto userDto;
 
     public PhoneNumberOutGoingDto() {

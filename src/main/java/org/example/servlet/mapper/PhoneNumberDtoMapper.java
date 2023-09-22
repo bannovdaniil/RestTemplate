@@ -8,11 +8,11 @@ import org.example.servlet.dto.PhoneNumberUpdateDto;
 import java.util.List;
 
 public interface PhoneNumberDtoMapper {
-    public PhoneNumber map(PhoneNumberIncomingDto phoneNumberIncomingDto);
+    PhoneNumber map(PhoneNumberIncomingDto phoneNumberIncomingDto);
 
-    public PhoneNumberOutGoingDto map(PhoneNumber phoneNumber);
+    PhoneNumberOutGoingDto map(PhoneNumber phoneNumber);
 
-    public List<PhoneNumberOutGoingDto> map(List<PhoneNumber> phoneNumber);
+    List<PhoneNumberOutGoingDto> map(List<PhoneNumber> phoneNumber);
 
-    public PhoneNumber map(PhoneNumberUpdateDto phoneNumberIncomingDto);
+    PhoneNumber map(PhoneNumberUpdateDto phoneNumberIncomingDto);
 }

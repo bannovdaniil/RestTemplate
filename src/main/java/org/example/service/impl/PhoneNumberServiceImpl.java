@@ -9,7 +9,7 @@ import org.example.servlet.dto.PhoneNumberIncomingDto;
 import org.example.servlet.dto.PhoneNumberOutGoingDto;
 import org.example.servlet.dto.PhoneNumberUpdateDto;
 import org.example.servlet.mapper.PhoneNumberDtoMapper;
-import org.example.servlet.mapper.PhoneNumberDtoMapperImpl;
+import org.example.servlet.mapper.impl.PhoneNumberDtoMapperImpl;
 
 import java.util.List;
 

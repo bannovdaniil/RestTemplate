@@ -1,4 +1,4 @@
-package org.example.servlet.mapper;
+package org.example.servlet.mapper.impl;
 
 import org.example.model.PhoneNumber;
 import org.example.model.User;
@@ -6,6 +6,7 @@ import org.example.servlet.dto.PhoneNumberIncomingDto;
 import org.example.servlet.dto.PhoneNumberOutGoingDto;
 import org.example.servlet.dto.PhoneNumberUpdateDto;
 import org.example.servlet.dto.UserSmallOutGoingDto;
+import org.example.servlet.mapper.PhoneNumberDtoMapper;
 
 import java.util.List;
 

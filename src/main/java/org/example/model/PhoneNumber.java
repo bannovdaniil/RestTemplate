@@ -1,7 +1,11 @@
 package org.example.model;
 
+import org.example.repository.UserRepository;
+import org.example.repository.impl.UserRepositoryImpl;
+
 /**
  * The Phone Number of User
+ * Lazy User getter from Repository.
  * Relation:
  * One To One: PhoneNumber - User
  */
@@ -9,6 +13,8 @@ public class PhoneNumber {
     private Long id;
     private String number;
     private User user;
+
+    private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
 
     public PhoneNumber() {
     }
@@ -36,6 +42,11 @@ public class PhoneNumber {
     }
 
     public User getUser() {
+        if (user != null && user.getId() > 0 && user.getFirstName() == null) {
+            this.user = userRepository.findById(user.getId()).orElse(user);
+        } else if (user != null && user.getId() == 0) {
+            this.user = null;
+        }
         return user;
     }
 

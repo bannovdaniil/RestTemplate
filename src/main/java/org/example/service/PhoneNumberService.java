@@ -10,7 +10,7 @@ public interface PhoneNumberService {
 
     void update(PhoneNumberUpdateDto phoneNumber) throws NotFoundException;
 
-    PhoneNumberOutGoingDto findById(Long phoneNumberID) throws NotFoundException;
+    PhoneNumberOutGoingDto findById(Long phoneNumberId) throws NotFoundException;
 
     List<PhoneNumberOutGoingDto> findAll();
 
