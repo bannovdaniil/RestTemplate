@@ -1,9 +1,14 @@
 package org.example.service.impl;
 
 import org.example.model.Department;
+import org.example.model.UserToDepartment;
 import org.example.repository.DepartmentRepository;
+import org.example.repository.UserRepository;
+import org.example.repository.UserToDepartmentRepository;
 import org.example.repository.exception.NotFoundException;
 import org.example.repository.impl.DepartmentRepositoryImpl;
+import org.example.repository.impl.UserRepositoryImpl;
+import org.example.repository.impl.UserToDepartmentRepositoryImpl;
 import org.example.service.DepartmentService;
 import org.example.servlet.dto.DepartmentIncomingDto;
 import org.example.servlet.dto.DepartmentOutGoingDto;
@@ -15,6 +20,8 @@ import java.util.List;
 
 public class DepartmentServiceImpl implements DepartmentService {
     private static final DepartmentRepository departmentRepository = DepartmentRepositoryImpl.getInstance();
+    private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
+    private static final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
     private final DepartmentDtoMapper departmentDtoMapper;
     private static DepartmentService instance;
 
@@ -39,12 +46,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void update(DepartmentUpdateDto departmentUpdateDto) throws NotFoundException {
-        if (departmentRepository.exitsById(departmentUpdateDto.getId())) {
-            Department department = departmentDtoMapper.map(departmentUpdateDto);
-            departmentRepository.update(department);
-        } else {
-            throw new NotFoundException("Department not found.");
-        }
+        chekExistDepartment(departmentUpdateDto.getId());
+        Department department = departmentDtoMapper.map(departmentUpdateDto);
+        departmentRepository.update(department);
     }
 
     @Override
@@ -61,8 +65,45 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public boolean delete(Long departmentId) {
-        return departmentRepository.deleteById(departmentId);
+    public void delete(Long departmentId) throws NotFoundException {
+        chekExistDepartment(departmentId);
+        departmentRepository.deleteById(departmentId);
+    }
+
+    private static void chekExistDepartment(Long departmentId) throws NotFoundException {
+        if (!departmentRepository.exitsById(departmentId)) {
+            throw new NotFoundException("Department not found.");
+        }
+    }
+
+    @Override
+    public void deleteUserFromDepartment(Long departmentId, Long userId) throws NotFoundException {
+        chekExistDepartment(departmentId);
+        if (userRepository.exitsById(userId)) {
+            UserToDepartment linkUserDepartment = userToDepartmentRepository.findByUserIdAndDepartmentId(userId, departmentId)
+                    .orElseThrow(() -> new NotFoundException("Link many to many Not found."));
+
+            userToDepartmentRepository.deleteById(linkUserDepartment.getId());
+        } else {
+            throw new NotFoundException("User not found.");
+        }
+
+    }
+
+    @Override
+    public void addUserToDepartment(Long departmentId, Long userId) throws NotFoundException {
+        chekExistDepartment(departmentId);
+        if (userRepository.exitsById(userId)) {
+            UserToDepartment linkUserDepartment = new UserToDepartment(
+                    null,
+                    userId,
+                    departmentId
+            );
+            userToDepartmentRepository.save(linkUserDepartment);
+        } else {
+            throw new NotFoundException("User not found.");
+        }
+
     }
 
 }

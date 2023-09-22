@@ -22,18 +22,16 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/department/*"})
 public class DepartmentServlet extends HttpServlet {
-    private final DepartmentService departmentService;
+    private static final DepartmentService departmentService = DepartmentServiceImpl.getInstance();
     private final ObjectMapper objectMapper;
 
     public DepartmentServlet() {
-        this.departmentService = DepartmentServiceImpl.getInstance();
         this.objectMapper = new ObjectMapper();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
-
 
         String responseAnswer = "";
         try {
@@ -61,18 +59,23 @@ public class DepartmentServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
             Long departmentId = Long.parseLong(pathPart[1]);
-            if (departmentService.delete(departmentId)) {
-                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            } else {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            }
+            resp.setStatus(HttpServletResponse.SC_OK);
 
+            if ("deleteUser".equals(pathPart[2])) {
+                Long userId = Long.parseLong(pathPart[3]);
+                departmentService.deleteUserFromDepartment(departmentId, userId);
+            } else {
+                departmentService.delete(departmentId);
+            }
+        } catch (NotFoundException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            responseAnswer = e.getMessage();
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
@@ -110,9 +113,19 @@ public class DepartmentServlet extends HttpServlet {
         String responseAnswer = "";
         Optional<DepartmentUpdateDto> departmentResponse;
         try {
-            departmentResponse = Optional.ofNullable(objectMapper.readValue(json, DepartmentUpdateDto.class));
-            DepartmentUpdateDto departmentUpdateDto = departmentResponse.orElseThrow(IllegalArgumentException::new);
-            departmentService.update(departmentUpdateDto);
+            if (req.getPathInfo().contains("/addUser/")) {
+                String[] pathPart = req.getPathInfo().split("/");
+                if ("addUser".equals(pathPart[2])) {
+                    Long departmentId = Long.parseLong(pathPart[1]);
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    Long userId = Long.parseLong(pathPart[3]);
+                    departmentService.addUserToDepartment(departmentId, userId);
+                }
+            } else {
+                departmentResponse = Optional.ofNullable(objectMapper.readValue(json, DepartmentUpdateDto.class));
+                DepartmentUpdateDto departmentUpdateDto = departmentResponse.orElseThrow(IllegalArgumentException::new);
+                departmentService.update(departmentUpdateDto);
+            }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             responseAnswer = e.getMessage();

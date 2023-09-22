@@ -16,5 +16,9 @@ public interface DepartmentService {
 
     List<DepartmentOutGoingDto> findAll();
 
-    boolean delete(Long departmentId);
+    void delete(Long departmentId) throws NotFoundException;
+
+    void deleteUserFromDepartment(Long departmentId, Long userId) throws NotFoundException;
+
+    void addUserToDepartment(Long departmentId, Long userId) throws NotFoundException;
 }
