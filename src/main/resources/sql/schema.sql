@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS users_departments
 (
     users_departments_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id              BIGINT REFERENCES users (user_id),
-    department_id        BIGINT REFERENCES departments (department_id)
+    department_id        BIGINT REFERENCES departments (department_id),
+    CONSTRAINT unique_link UNIQUE (user_id, department_id)
 );
 
 CREATE TABLE IF NOT EXISTS phonenumbers
