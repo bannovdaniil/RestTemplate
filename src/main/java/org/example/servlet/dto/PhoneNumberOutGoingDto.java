@@ -4,15 +4,15 @@ package org.example.servlet.dto;
 public class PhoneNumberOutGoingDto {
     private Long id;
     private String number;
-    private UserOutGoingDto user;
+    private UserSmallOutGoingDto userDto;
 
     public PhoneNumberOutGoingDto() {
     }
 
-    public PhoneNumberOutGoingDto(Long id, String number, UserOutGoingDto user) {
+    public PhoneNumberOutGoingDto(Long id, String number, UserSmallOutGoingDto userDto) {
         this.id = id;
         this.number = number;
-        this.user = user;
+        this.userDto = userDto;
     }
 
     public Long getId() {
@@ -31,11 +31,11 @@ public class PhoneNumberOutGoingDto {
         this.number = number;
     }
 
-    public UserOutGoingDto getUser() {
-        return user;
+    public UserSmallOutGoingDto getUserDto() {
+        return userDto;
     }
 
-    public void setUser(UserOutGoingDto user) {
-        this.user = user;
+    public void setUserDto(UserSmallOutGoingDto userDto) {
+        this.userDto = userDto;
     }
 }

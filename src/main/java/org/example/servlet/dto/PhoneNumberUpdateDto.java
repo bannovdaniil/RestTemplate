@@ -1,22 +1,18 @@
-package org.example.model;
+package org.example.servlet.dto;
 
-/**
- * The Phone Number of User
- * Relation:
- * One To One: PhoneNumber - User
- */
-public class PhoneNumber {
+
+public class PhoneNumberUpdateDto {
     private Long id;
     private String number;
-    private User user;
+    private Long userId;
 
-    public PhoneNumber() {
+    public PhoneNumberUpdateDto() {
     }
 
-    public PhoneNumber(Long id, String number, User user) {
+    public PhoneNumberUpdateDto(Long id, String number, Long userId) {
         this.id = id;
         this.number = number;
-        this.user = user;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -35,11 +31,11 @@ public class PhoneNumber {
         this.number = number;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
