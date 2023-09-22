@@ -1,9 +1,10 @@
-package org.example.servlet.mapper;
+package org.example.servlet.mapper.impl;
 
 import org.example.model.Role;
 import org.example.servlet.dto.RoleIncomingDto;
 import org.example.servlet.dto.RoleOutGoingDto;
 import org.example.servlet.dto.RoleUpdateDto;
+import org.example.servlet.mapper.RoleDtoMapper;
 
 import java.util.List;
 

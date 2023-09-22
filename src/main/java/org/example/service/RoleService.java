@@ -12,7 +12,7 @@ public interface RoleService {
 
     void update(RoleUpdateDto role) throws NotFoundException;
 
-    RoleOutGoingDto findById(Long roleID) throws NotFoundException;
+    RoleOutGoingDto findById(Long roleId) throws NotFoundException;
 
     List<RoleOutGoingDto> findAll();
 
