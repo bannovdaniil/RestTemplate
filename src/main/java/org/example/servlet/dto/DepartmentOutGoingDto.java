@@ -5,12 +5,12 @@ import java.util.List;
 public class DepartmentOutGoingDto {
     private Long id;
     private String name;
-    private List<UserOutGoingDto> userList;
+    private List<UserSmallOutGoingDto> userList;
 
     public DepartmentOutGoingDto() {
     }
 
-    public DepartmentOutGoingDto(Long id, String name, List<UserOutGoingDto> userList) {
+    public DepartmentOutGoingDto(Long id, String name, List<UserSmallOutGoingDto> userList) {
         this.id = id;
         this.name = name;
         this.userList = userList;
@@ -32,11 +32,11 @@ public class DepartmentOutGoingDto {
         this.name = name;
     }
 
-    public List<UserOutGoingDto> getUserList() {
+    public List<UserSmallOutGoingDto> getUserList() {
         return userList;
     }
 
-    public void setUserList(List<UserOutGoingDto> userList) {
+    public void setUserList(List<UserSmallOutGoingDto> userList) {
         this.userList = userList;
     }
 }

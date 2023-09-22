@@ -1,5 +1,8 @@
 package org.example.model;
 
+import org.example.repository.UserToDepartmentRepository;
+import org.example.repository.impl.UserToDepartmentRepositoryImpl;
+
 import java.util.List;
 
 /**
@@ -10,15 +13,17 @@ import java.util.List;
 public class Department {
     private Long id;
     private String name;
-    private List<Long> userIdList;
+    private List<User> userList;
+
+    private static final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
 
     public Department() {
     }
 
-    public Department(Long id, String name, List<Long> userIdList) {
+    public Department(Long id, String name, List<User> userList) {
         this.id = id;
         this.name = name;
-        this.userIdList = userIdList;
+        this.userList = userList;
     }
 
     public Long getId() {
@@ -37,20 +42,14 @@ public class Department {
         this.name = name;
     }
 
-    public List<Long> getUserIdList() {
-        return userIdList;
+    public List<User> getUserList() {
+        if (userList == null || userList.isEmpty()) {
+            userList = userToDepartmentRepository.findUsersByDepartmentId(this.id);
+        }
+        return userList;
     }
 
-    public void setUserIdList(List<Long> userIdList) {
-        this.userIdList = userIdList;
-    }
-
-    @Override
-    public String toString() {
-        return "Department{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", userIdList=" + userIdList +
-               '}';
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
     }
 }
