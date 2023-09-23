@@ -19,13 +19,6 @@
 15) БД на выбор Pestgres, MySQL
 16) Ставим плагин SonarLint
 
-Execution:
-docker-compose down
-docker-compose build
-docker-compose up -d
-
-http://localhost:8080/user
-
 Role:
 GET http://localhost:8080/role/all - получить все роли
 GET http://localhost:8080/role/{roleId} - получить роль с {roleId}
