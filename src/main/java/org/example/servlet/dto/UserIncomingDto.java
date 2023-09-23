@@ -1,24 +1,20 @@
 package org.example.servlet.dto;
 
-import java.util.List;
+import org.example.model.Role;
 
 public class UserIncomingDto {
     private String firstName;
     private String lastName;
 
-    private RoleIncomingDto role;
-    private List<PhoneNumberIncomingDto> phoneNumberList;
-    private List<DepartmentIncomingDto> departmentList;
+    private Role role;
 
     public UserIncomingDto() {
     }
 
-    public UserIncomingDto(String firstName, String lastName, RoleIncomingDto role, List<PhoneNumberIncomingDto> phoneNumberList, List<DepartmentIncomingDto> departmentList) {
+    public UserIncomingDto(String firstName, String lastName, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
-        this.phoneNumberList = phoneNumberList;
-        this.departmentList = departmentList;
     }
 
     public String getFirstName() {
@@ -37,28 +33,12 @@ public class UserIncomingDto {
         this.lastName = lastName;
     }
 
-    public RoleIncomingDto getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(RoleIncomingDto role) {
+    public void setRole(Role role) {
         this.role = role;
-    }
-
-    public List<PhoneNumberIncomingDto> getPhoneNumberList() {
-        return phoneNumberList;
-    }
-
-    public void setPhoneNumberList(List<PhoneNumberIncomingDto> phoneNumberList) {
-        this.phoneNumberList = phoneNumberList;
-    }
-
-    public List<DepartmentIncomingDto> getDepartmentList() {
-        return departmentList;
-    }
-
-    public void setDepartmentList(List<DepartmentIncomingDto> departmentList) {
-        this.departmentList = departmentList;
     }
 }
 

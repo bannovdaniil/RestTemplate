@@ -15,4 +15,6 @@ public interface DepartmentDtoMapper {
     Department map(DepartmentUpdateDto departmentUpdateDto);
 
     List<DepartmentOutGoingDto> map(List<Department> departmentList);
+
+    List<Department> mapUpdateList(List<DepartmentUpdateDto> departmentList);
 }

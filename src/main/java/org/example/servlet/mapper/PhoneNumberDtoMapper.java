@@ -12,7 +12,9 @@ public interface PhoneNumberDtoMapper {
 
     PhoneNumberOutGoingDto map(PhoneNumber phoneNumber);
 
-    List<PhoneNumberOutGoingDto> map(List<PhoneNumber> phoneNumber);
+    List<PhoneNumberOutGoingDto> map(List<PhoneNumber> phoneNumberList);
+
+    List<PhoneNumber> mapUpdateList(List<PhoneNumberUpdateDto> phoneNumberUpdateList);
 
     PhoneNumber map(PhoneNumberUpdateDto phoneNumberIncomingDto);
 }

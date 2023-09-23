@@ -1,18 +1,20 @@
 package org.example.service;
 
-import org.example.model.User;
 import org.example.repository.exception.NotFoundException;
+import org.example.servlet.dto.UserIncomingDto;
+import org.example.servlet.dto.UserOutGoingDto;
+import org.example.servlet.dto.UserUpdateDto;
 
 import java.util.List;
 
 public interface UserService {
-    User save(User user);
+    UserOutGoingDto save(UserIncomingDto userDto);
 
-    void update(User user);
+    void update(UserUpdateDto userDto) throws NotFoundException;
 
-    User findById(Long userId) throws NotFoundException;
+    UserOutGoingDto findById(Long userId) throws NotFoundException;
 
-    List<User> findAll();
+    List<UserOutGoingDto> findAll();
 
-    boolean delete(Long userId);
+    void delete(Long userId) throws NotFoundException;
 }

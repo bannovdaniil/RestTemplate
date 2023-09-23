@@ -15,12 +15,11 @@ import java.util.List;
 
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository = RoleRepositoryImpl.getInstance();
-    private final RoleDtoMapper roleDtoMapper;
+    private final RoleDtoMapper roleDtoMapper = RoleDtoMapperImpl.getInstance();
     private static RoleService instance;
 
 
     private RoleServiceImpl() {
-        this.roleDtoMapper = new RoleDtoMapperImpl();
     }
 
     public static synchronized RoleService getInstance() {

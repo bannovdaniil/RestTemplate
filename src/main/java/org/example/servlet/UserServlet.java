@@ -6,55 +6,45 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.model.User;
 import org.example.repository.exception.NotFoundException;
 import org.example.service.UserService;
 import org.example.service.impl.UserServiceImpl;
-import org.example.servlet.mapper.UserDtoMapper;
-import org.example.servlet.mapper.UserDtoMapperImpl;
+import org.example.servlet.dto.UserIncomingDto;
+import org.example.servlet.dto.UserOutGoingDto;
+import org.example.servlet.dto.UserUpdateDto;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Optional;
 
 
 @WebServlet(urlPatterns = {"/user/*"})
 public class UserServlet extends HttpServlet {
-    private static final String USERID_PARAM = "userId";
-    private final UserService userService;
-    private final UserDtoMapper userDtoMapper;
+    private static final UserService userService = UserServiceImpl.getInstance();
     private final ObjectMapper objectMapper;
 
     public UserServlet() {
-        this.userService = UserServiceImpl.getInstance();
         this.objectMapper = new ObjectMapper();
-        this.userDtoMapper = new UserDtoMapperImpl();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
-
-        PrintWriter printWriter = resp.getWriter();
 
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
-            switch (pathPart[1]) {
-                case "all":
-                    List<User> userList = userService.findAll();
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    responseAnswer = objectMapper.writeValueAsString(userList);
-                    break;
-                case USERID_PARAM:
-                    Long userId = Long.parseLong(pathPart[2]);
-                    User user = userService.findById(userId);
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    responseAnswer = objectMapper.writeValueAsString(user);
-                    break;
-                default:
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    responseAnswer = "Illegal argument.";
+            if ("all".equals(pathPart[1])) {
+                List<UserOutGoingDto> userDtoList = userService.findAll();
+                resp.setStatus(HttpServletResponse.SC_OK);
+                responseAnswer = objectMapper.writeValueAsString(userDtoList);
+            } else {
+                Long userId = Long.parseLong(pathPart[1]);
+                UserOutGoingDto userDto = userService.findById(userId);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                responseAnswer = objectMapper.writeValueAsString(userDto);
             }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -63,35 +53,71 @@ public class UserServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
         }
+        PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
         printWriter.flush();
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
-
-        PrintWriter printWriter = resp.getWriter();
-
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
-
-            if (pathPart[1].equals(USERID_PARAM)) {
-                Long userId = Long.parseLong(pathPart[2]);
-                if (userService.delete(userId)) {
-                    resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                }
-            } else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                responseAnswer = "Illegal argument.";
-            }
+            Long userId = Long.parseLong(pathPart[1]);
+            resp.setStatus(HttpServletResponse.SC_OK);
+            userService.delete(userId);
+        } catch (NotFoundException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            responseAnswer = e.getMessage();
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
         }
+        PrintWriter printWriter = resp.getWriter();
+        printWriter.write(responseAnswer);
+        printWriter.flush();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setJsonHeader(resp);
+        String json = getJson(req);
+
+        String responseAnswer = null;
+        Optional<UserIncomingDto> userResponse;
+        try {
+            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserIncomingDto.class));
+            UserIncomingDto user = userResponse.orElseThrow(IllegalArgumentException::new);
+            responseAnswer = objectMapper.writeValueAsString(userService.save(user));
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            responseAnswer = "Incorrect user Object.";
+        }
+        PrintWriter printWriter = resp.getWriter();
+        printWriter.write(responseAnswer);
+        printWriter.flush();
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setJsonHeader(resp);
+        String json = getJson(req);
+
+        String responseAnswer = "";
+        Optional<UserUpdateDto> userResponse;
+        try {
+            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserUpdateDto.class));
+            UserUpdateDto userUpdateDto = userResponse.orElseThrow(IllegalArgumentException::new);
+            userService.update(userUpdateDto);
+        } catch (NotFoundException e) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            responseAnswer = e.getMessage();
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            responseAnswer = "Incorrect user Object.";
+        }
+        PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
         printWriter.flush();
     }
@@ -101,27 +127,13 @@ public class UserServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setJsonHeader(resp);
-
-        PrintWriter printWriter = resp.getWriter();
-        String responseAnswer;
-        String userIdString = req.getParameter(USERID_PARAM);
-
-        try {
-            Long userId = Long.parseLong(userIdString);
-            User user = userService.findById(userId);
-            resp.setStatus(HttpServletResponse.SC_OK);
-            responseAnswer = objectMapper.writeValueAsString(user);
-        } catch (NotFoundException e) {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            responseAnswer = e.getMessage();
-        } catch (NumberFormatException e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Incorrect userId.";
+    private static String getJson(HttpServletRequest req) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader postData = req.getReader();
+        String line;
+        while ((line = postData.readLine()) != null) {
+            sb.append(line);
         }
-        printWriter.write(responseAnswer);
-        printWriter.flush();
+        return sb.toString();
     }
 }

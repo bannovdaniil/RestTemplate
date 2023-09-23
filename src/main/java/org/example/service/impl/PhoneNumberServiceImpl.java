@@ -15,12 +15,11 @@ import java.util.List;
 
 public class PhoneNumberServiceImpl implements PhoneNumberService {
     private final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
-    private final PhoneNumberDtoMapper phoneNumberDtoMapper;
+    private static final PhoneNumberDtoMapper phoneNumberDtoMapper = PhoneNumberDtoMapperImpl.getInstance();
     private static PhoneNumberService instance;
 
 
     private PhoneNumberServiceImpl() {
-        this.phoneNumberDtoMapper = new PhoneNumberDtoMapperImpl();
     }
 
     public static synchronized PhoneNumberService getInstance() {

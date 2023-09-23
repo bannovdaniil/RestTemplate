@@ -1,5 +1,10 @@
 package org.example.model;
 
+import org.example.repository.PhoneNumberRepository;
+import org.example.repository.UserToDepartmentRepository;
+import org.example.repository.impl.PhoneNumberRepositoryImpl;
+import org.example.repository.impl.UserToDepartmentRepositoryImpl;
+
 import java.util.List;
 
 /**
@@ -14,21 +19,23 @@ public class User {
     private Long id;
     private String firstName;
     private String lastName;
-
     private Role role;
     private List<PhoneNumber> phoneNumberList;
-    private List<Long> departmentIdList;
+    private List<Department> departmentList;
+
+    private static final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
+    private static final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
 
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, Role role, List<PhoneNumber> phoneNumberList, List<Long> departmentIdList) {
+    public User(Long id, String firstName, String lastName, Role role, List<PhoneNumber> phoneNumberList, List<Department> departmentList) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
         this.phoneNumberList = phoneNumberList;
-        this.departmentIdList = departmentIdList;
+        this.departmentList = departmentList;
     }
 
     public Long getId() {
@@ -64,6 +71,9 @@ public class User {
     }
 
     public List<PhoneNumber> getPhoneNumberList() {
+        if (phoneNumberList == null) {
+            this.phoneNumberList = phoneNumberRepository.findAllByUserId(this.id);
+        }
         return phoneNumberList;
     }
 
@@ -71,23 +81,14 @@ public class User {
         this.phoneNumberList = phoneNumberList;
     }
 
-    public List<Long> getDepartmentIdList() {
-        return departmentIdList;
+    public List<Department> getDepartmentList() {
+        if (departmentList == null) {
+            departmentList = userToDepartmentRepository.findDepartmentsByUserId(this.id);
+        }
+        return departmentList;
     }
 
-    public void setDepartmentIdList(List<Long> departmentIdList) {
-        this.departmentIdList = departmentIdList;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-               "id=" + id +
-               ", firstName='" + firstName + '\'' +
-               ", lastName='" + lastName + '\'' +
-               ", role=" + role +
-               ", phoneNumberList=" + phoneNumberList +
-               ", departmentIdList=" + departmentIdList +
-               '}';
+    public void setDepartmentList(List<Department> departmentList) {
+        this.departmentList = departmentList;
     }
 }

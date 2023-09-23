@@ -43,7 +43,7 @@ public class Department {
     }
 
     public List<User> getUserList() {
-        if (userList == null || userList.isEmpty()) {
+        if (userList == null) {
             userList = userToDepartmentRepository.findUsersByDepartmentId(this.id);
         }
         return userList;

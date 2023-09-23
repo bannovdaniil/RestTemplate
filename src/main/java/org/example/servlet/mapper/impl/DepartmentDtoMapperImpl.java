@@ -10,6 +10,18 @@ import org.example.servlet.mapper.DepartmentDtoMapper;
 import java.util.List;
 
 public class DepartmentDtoMapperImpl implements DepartmentDtoMapper {
+    private static DepartmentDtoMapper instance;
+
+    private DepartmentDtoMapperImpl() {
+    }
+
+    public static synchronized DepartmentDtoMapper getInstance() {
+        if (instance == null) {
+            instance = new DepartmentDtoMapperImpl();
+        }
+        return instance;
+    }
+
     @Override
     public Department map(DepartmentIncomingDto dto) {
         return new Department(
@@ -46,6 +58,11 @@ public class DepartmentDtoMapperImpl implements DepartmentDtoMapper {
 
     @Override
     public List<DepartmentOutGoingDto> map(List<Department> departmentList) {
+        return departmentList.stream().map(this::map).toList();
+    }
+
+    @Override
+    public List<Department> mapUpdateList(List<DepartmentUpdateDto> departmentList) {
         return departmentList.stream().map(this::map).toList();
     }
 }

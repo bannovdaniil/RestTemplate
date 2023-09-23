@@ -11,6 +11,18 @@ import org.example.servlet.mapper.PhoneNumberDtoMapper;
 import java.util.List;
 
 public class PhoneNumberDtoMapperImpl implements PhoneNumberDtoMapper {
+    private static PhoneNumberDtoMapper instance;
+
+    private PhoneNumberDtoMapperImpl() {
+    }
+
+    public static synchronized PhoneNumberDtoMapper getInstance() {
+        if (instance == null) {
+            instance = new PhoneNumberDtoMapperImpl();
+        }
+        return instance;
+    }
+
     @Override
     public PhoneNumber map(PhoneNumberIncomingDto phoneDto) {
         return new PhoneNumber(
@@ -36,8 +48,13 @@ public class PhoneNumberDtoMapperImpl implements PhoneNumberDtoMapper {
     }
 
     @Override
-    public List<PhoneNumberOutGoingDto> map(List<PhoneNumber> phoneNumber) {
-        return phoneNumber.stream().map(this::map).toList();
+    public List<PhoneNumberOutGoingDto> map(List<PhoneNumber> phoneNumberList) {
+        return phoneNumberList.stream().map(this::map).toList();
+    }
+
+    @Override
+    public List<PhoneNumber> mapUpdateList(List<PhoneNumberUpdateDto> phoneNumberUpdateList) {
+        return phoneNumberUpdateList.stream().map(this::map).toList();
     }
 
     @Override
@@ -55,4 +72,5 @@ public class PhoneNumberDtoMapperImpl implements PhoneNumberDtoMapper {
                 )
         );
     }
+
 }

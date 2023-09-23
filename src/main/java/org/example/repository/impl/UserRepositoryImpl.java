@@ -2,10 +2,7 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
-import org.example.model.PhoneNumber;
-import org.example.model.Role;
-import org.example.model.User;
-import org.example.model.UserToDepartment;
+import org.example.model.*;
 import org.example.repository.*;
 import org.example.repository.exception.RepositoryException;
 
@@ -115,14 +112,19 @@ public class UserRepositoryImpl implements UserRepository {
      * @param user
      */
     private void saveDepartmentList(User user) {
-        if (user.getDepartmentIdList() != null && !user.getDepartmentIdList().isEmpty()) {
-            List<Long> departmentIdList = new ArrayList<>(user.getDepartmentIdList());
+        if (user.getDepartmentList() != null && !user.getDepartmentList().isEmpty()) {
+            List<Long> departmentIdList = new ArrayList<>(
+                    user.getDepartmentList()
+                            .stream()
+                            .map(Department::getId)
+                            .toList()
+            );
             List<UserToDepartment> existsDepartamentList = userToDepartmentRepository.findAllByUserId(user.getId());
             for (UserToDepartment userToDepartment : existsDepartamentList) {
                 if (!departmentIdList.contains(userToDepartment.getDepartmentId())) {
                     userToDepartmentRepository.deleteById(userToDepartment.getId());
                 }
-                departmentIdList.remove(userToDepartment.getUserId());
+                departmentIdList.remove(userToDepartment.getDepartmentId());
             }
             for (Long departmentId : departmentIdList) {
                 if (departmentRepository.exitsById(departmentId)) {
@@ -151,44 +153,63 @@ public class UserRepositoryImpl implements UserRepository {
     private void savePhoneNumberList(User user) {
         if (user.getPhoneNumberList() != null && !user.getPhoneNumberList().isEmpty()) {
             List<PhoneNumber> phoneNumberList = new ArrayList<>(user.getPhoneNumberList());
-            List<Long> existsPhoneNumberIdList = phoneNumberRepository.findAllByUserId(user.getId())
-                    .stream()
-                    .map(PhoneNumber::getId)
-                    .toList();
+            List<Long> existsPhoneNumberIdList = new ArrayList<>(
+                    phoneNumberRepository.findAllByUserId(user.getId())
+                            .stream()
+                            .map(PhoneNumber::getId)
+                            .toList()
+            );
 
             for (int i = 0; i < phoneNumberList.size(); i++) {
                 PhoneNumber phoneNumber = phoneNumberList.get(i);
-                phoneNumber.setUserId(user.getId());
+                phoneNumber.setUser(user);
                 if (existsPhoneNumberIdList.contains(phoneNumber.getId())) {
                     phoneNumberRepository.update(phoneNumber);
                 } else {
                     saveOrUpdateExitsNumber(phoneNumber);
                 }
                 phoneNumberList.set(i, null);
+                existsPhoneNumberIdList.remove(phoneNumber.getId());
             }
             phoneNumberList
                     .stream()
                     .filter(Objects::nonNull)
                     .forEach(phoneNumber -> {
-                        phoneNumber.setUserId(user.getId());
+                        phoneNumber.setUser(user);
                         phoneNumberRepository.save(phoneNumber);
                     });
+            existsPhoneNumberIdList
+                    .stream()
+                    .forEach(phoneNumberRepository::deleteById);
         } else {
             phoneNumberRepository.deleteByUserId(user.getId());
         }
 
     }
 
+
+    /**
+     * Проверяем создается ли новый Номер.
+     * Производим поиск по базе по номеру.
+     * Если номер найден, проверяем, закрепляется ли этот номер за какимто пользователем.
+     * Если закрепляется тогда устанавливаем ID на тот который находится в базе.
+     *
+     * @param phoneNumber
+     */
     private void saveOrUpdateExitsNumber(PhoneNumber phoneNumber) {
         if (phoneNumberRepository.existsByNumber(phoneNumber.getNumber())) {
             Optional<PhoneNumber> exitNumber = phoneNumberRepository.findByNumber(phoneNumber.getNumber());
-            if (exitNumber.isPresent() && exitNumber.get().getUserId() == 0) {
+            if (exitNumber.isPresent()
+                && exitNumber.get().getUser() != null
+                && exitNumber.get().getUser().getId() > 0) {
                 phoneNumber.setId(exitNumber.get().getId());
                 phoneNumberRepository.update(phoneNumber);
+
             }
         } else {
             phoneNumberRepository.save(phoneNumber);
         }
+
     }
 
     @Override
@@ -285,20 +306,14 @@ public class UserRepositoryImpl implements UserRepository {
     private User createUser(ResultSet resultSet) throws SQLException {
         Long userId = resultSet.getLong("user_id");
         Role role = roleRepository.findById(resultSet.getLong("role_id")).orElse(null);
-        List<PhoneNumber> phoneNumberList = phoneNumberRepository.findAllByUserId(userId);
-        List<Long> userDepartmentIdList = userToDepartmentRepository
-                .findAllByUserId(userId)
-                .stream()
-                .map(UserToDepartment::getDepartmentId)
-                .toList();
 
         return new User(
                 userId,
                 resultSet.getString("user_firstname"),
                 resultSet.getString("user_lastname"),
                 role,
-                phoneNumberList,
-                userDepartmentIdList
+                null,
+                null
         );
     }
 }

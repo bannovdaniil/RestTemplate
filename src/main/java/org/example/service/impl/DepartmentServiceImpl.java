@@ -22,12 +22,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     private static final DepartmentRepository departmentRepository = DepartmentRepositoryImpl.getInstance();
     private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
     private static final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
-    private final DepartmentDtoMapper departmentDtoMapper;
+    private static final DepartmentDtoMapper departmentDtoMapper = DepartmentDtoMapperImpl.getInstance();
     private static DepartmentService instance;
 
 
     private DepartmentServiceImpl() {
-        this.departmentDtoMapper = new DepartmentDtoMapperImpl();
     }
 
     public static synchronized DepartmentService getInstance() {

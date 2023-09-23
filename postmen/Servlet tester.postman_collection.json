@@ -244,7 +244,7 @@
 			"name": "Department",
 			"item": [
 				{
-					"name": "Add phone",
+					"name": "Add department",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -411,7 +411,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"firstName\": \"Иван\",\r\n        \"lastName\": \"Субботин\",\r\n        \"role\": {\r\n            \"id\": 1,\r\n            \"name\": \"Администратор\"\r\n        },\r\n        \"phoneNumberList\": [\r\n            {\r\n                \"id\": 1,\r\n                \"number\": \"+1(123)123 1111\",\r\n                \"userId\": 1\r\n            },\r\n            {\r\n                \"id\": 2,\r\n                \"number\": \"+1(123)123 2222\",\r\n                \"userId\": 1\r\n            }\r\n        ],\r\n        \"departmentIdList\": [\r\n            1\r\n        ]\r\n    }",
+							"raw": "{\r\n        \"firstName\": \"New firstName\",\r\n        \"lastName\": \"New LastName\",\r\n        \"role\": {\r\n            \"id\": 4,\r\n            \"name\": \"Администратор\"\r\n        }\r\n     \r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -439,7 +439,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/user/all",
+							"raw": "http://localhost:8080/user/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -447,7 +447,7 @@
 							"port": "8080",
 							"path": [
 								"user",
-								"all"
+								"1"
 							]
 						}
 					},
@@ -479,7 +479,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/user/userId/20",
+							"raw": "http://localhost:8080/user/20",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -487,7 +487,6 @@
 							"port": "8080",
 							"path": [
 								"user",
-								"userId",
 								"20"
 							]
 						}
@@ -501,20 +500,17 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"id\": 1,\r\n        \"firstName\": \"Иван Edit\",\r\n        \"lastName\": \"Субботин Edit\",\r\n        \"role\": {\r\n            \"id\": 2,\r\n        },\r\n        \"phoneNumberList\": [\r\n            {\r\n                \"number\": \"+1(123)222 4444\",\r\n            },\r\n            {\r\n                \"number\": \"+1(123)222 5555\",\r\n            }\r\n        ],\r\n        \"departmentIdList\": [\r\n            1,2\r\n        ]\r\n    }"
+							"raw": "{\r\n  \"id\": 1,\r\n  \"firstName\": \"Иван Edit2333344\",\r\n  \"lastName\": \"Субботин Edit3\",\r\n  \"role\": {\r\n    \"id\": 2\r\n  },\r\n  \"phoneNumberList\": [\r\n    {\r\n      \"id\": 1,\r\n      \"number\": \"+1(123)123 1111\"\r\n    },\r\n    {\r\n      \"id\": 2,\r\n      \"number\": \"+1(123)123 2222\"\r\n    },\r\n    {\r\n      \"id\": null,\r\n      \"number\": \"+1(555)123 2222\"\r\n    }\r\n  ],\r\n  \"departmentList\": [\r\n   \r\n    {\r\n      \"id\": 2\r\n    }\r\n    \r\n  ]\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/v1/update/2",
+							"raw": "http://localhost:8080/user",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"api",
-								"v1",
-								"update",
-								"2"
+								"user"
 							]
 						}
 					},
