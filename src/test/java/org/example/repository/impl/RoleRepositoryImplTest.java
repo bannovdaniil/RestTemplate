@@ -1,5 +1,9 @@
 package org.example.repository.impl;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import org.example.model.Role;
 import org.example.repository.RoleRepository;
 import org.example.util.PropertiesUtil;
@@ -7,6 +11,8 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.ext.ScriptUtils;
+import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -16,12 +22,21 @@ import java.util.Optional;
 @Testcontainers
 @Tag("DockerRequired")
 class RoleRepositoryImplTest {
+    private static final String INIT_SQL = "sql/schema.sql";
+    private static int containerPort = 5432;
+    private static int localPort = 5432;
+    private static JdbcDatabaseDelegate jdbcDatabaseDelegate;
+
     @Container
     public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:15-alpine")
             .withDatabaseName("users_db")
             .withUsername(PropertiesUtil.getProperties("db.username"))
             .withPassword(PropertiesUtil.getProperties("db.password"))
-            .withInitScript("sql/schema.sql");
+            .withExposedPorts(containerPort)
+            .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(
+                    new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(localPort), new ExposedPort(containerPort)))
+            ))
+            .withInitScript(INIT_SQL);
 
     public static RoleRepository roleRepository;
 
@@ -29,6 +44,12 @@ class RoleRepositoryImplTest {
     static void beforeAll() {
         container.start();
         roleRepository = RoleRepositoryImpl.getInstance();
+        jdbcDatabaseDelegate = new JdbcDatabaseDelegate(container, "");
+    }
+
+    @BeforeEach
+    void setUp() {
+        ScriptUtils.runInitScript(jdbcDatabaseDelegate, INIT_SQL);
     }
 
     @AfterAll
@@ -66,19 +87,19 @@ class RoleRepositoryImplTest {
     @DisplayName("Delete by ID")
     @Test
     void deleteById() {
-        List<Role> all = roleRepository.findAll();
         Boolean expectedValue = true;
-        int expectedSize = 6;
+        int expectedSize = 5;
 
         Role tempRole = new Role(null, "Role for delete.");
         tempRole = roleRepository.save(tempRole);
 
         boolean resultDelete = roleRepository.deleteById(tempRole.getId());
-        List<Role> roleListAfter = all;
+        List<Role> roleListAfter = roleRepository.findAll();
 
         Assertions.assertEquals(expectedValue, resultDelete);
         Assertions.assertEquals(expectedSize, roleListAfter.size());
     }
+
 
     @DisplayName("Find by ID")
     @ParameterizedTest
@@ -97,7 +118,7 @@ class RoleRepositoryImplTest {
 
     @Test
     void findAll() {
-        int expectedSize = 6;
+        int expectedSize = 5;
         List<Role> roleList = roleRepository.findAll();
 
         Assertions.assertEquals(expectedSize, roleList.size());
