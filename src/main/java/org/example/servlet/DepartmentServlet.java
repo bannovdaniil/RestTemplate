@@ -7,11 +7,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.repository.exception.NotFoundException;
-import org.example.service.UserService;
-import org.example.service.impl.UserServiceImpl;
-import org.example.servlet.dto.UserIncomingDto;
-import org.example.servlet.dto.UserOutGoingDto;
-import org.example.servlet.dto.UserUpdateDto;
+import org.example.service.DepartmentService;
+import org.example.service.impl.DepartmentServiceImpl;
+import org.example.servlet.dto.DepartmentIncomingDto;
+import org.example.servlet.dto.DepartmentOutGoingDto;
+import org.example.servlet.dto.DepartmentUpdateDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,31 +20,31 @@ import java.util.List;
 import java.util.Optional;
 
 
-@WebServlet(urlPatterns = {"/user/*"})
-public class UserServlet extends HttpServlet {
-    private static final UserService userService = UserServiceImpl.getInstance();
+@WebServlet(urlPatterns = {"/department/*"})
+public class DepartmentServlet extends HttpServlet {
+    private static final DepartmentService departmentService = DepartmentServiceImpl.getInstance();
     private final ObjectMapper objectMapper;
 
-    public UserServlet() {
+    public DepartmentServlet() {
         this.objectMapper = new ObjectMapper();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
 
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
             if ("all".equals(pathPart[1])) {
-                List<UserOutGoingDto> userDtoList = userService.findAll();
+                List<DepartmentOutGoingDto> departmentDtoList = departmentService.findAll();
                 resp.setStatus(HttpServletResponse.SC_OK);
-                responseAnswer = objectMapper.writeValueAsString(userDtoList);
+                responseAnswer = objectMapper.writeValueAsString(departmentDtoList);
             } else {
-                Long userId = Long.parseLong(pathPart[1]);
-                UserOutGoingDto userDto = userService.findById(userId);
+                Long departmentId = Long.parseLong(pathPart[1]);
+                DepartmentOutGoingDto departmentDto = departmentService.findById(departmentId);
                 resp.setStatus(HttpServletResponse.SC_OK);
-                responseAnswer = objectMapper.writeValueAsString(userDto);
+                responseAnswer = objectMapper.writeValueAsString(departmentDto);
             }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -64,9 +64,15 @@ public class UserServlet extends HttpServlet {
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
-            Long userId = Long.parseLong(pathPart[1]);
+            Long departmentId = Long.parseLong(pathPart[1]);
             resp.setStatus(HttpServletResponse.SC_OK);
-            userService.delete(userId);
+
+            if ("deleteUser".equals(pathPart[2])) {
+                Long userId = Long.parseLong(pathPart[3]);
+                departmentService.deleteUserFromDepartment(departmentId, userId);
+            } else {
+                departmentService.delete(departmentId);
+            }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             responseAnswer = e.getMessage();
@@ -85,14 +91,14 @@ public class UserServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = null;
-        Optional<UserIncomingDto> userResponse;
+        Optional<DepartmentIncomingDto> departmentResponse;
         try {
-            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserIncomingDto.class));
-            UserIncomingDto user = userResponse.orElseThrow(IllegalArgumentException::new);
-            responseAnswer = objectMapper.writeValueAsString(userService.save(user));
+            departmentResponse = Optional.ofNullable(objectMapper.readValue(json, DepartmentIncomingDto.class));
+            DepartmentIncomingDto department = departmentResponse.orElseThrow(IllegalArgumentException::new);
+            responseAnswer = objectMapper.writeValueAsString(departmentService.save(department));
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Incorrect user Object.";
+            responseAnswer = "Incorrect department Object.";
         }
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
@@ -105,17 +111,27 @@ public class UserServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = "";
-        Optional<UserUpdateDto> userResponse;
+        Optional<DepartmentUpdateDto> departmentResponse;
         try {
-            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserUpdateDto.class));
-            UserUpdateDto userUpdateDto = userResponse.orElseThrow(IllegalArgumentException::new);
-            userService.update(userUpdateDto);
+            if (req.getPathInfo().contains("/addUser/")) {
+                String[] pathPart = req.getPathInfo().split("/");
+                if ("addUser".equals(pathPart[2])) {
+                    Long departmentId = Long.parseLong(pathPart[1]);
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    Long userId = Long.parseLong(pathPart[3]);
+                    departmentService.addUserToDepartment(departmentId, userId);
+                }
+            } else {
+                departmentResponse = Optional.ofNullable(objectMapper.readValue(json, DepartmentUpdateDto.class));
+                DepartmentUpdateDto departmentUpdateDto = departmentResponse.orElseThrow(IllegalArgumentException::new);
+                departmentService.update(departmentUpdateDto);
+            }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             responseAnswer = e.getMessage();
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Incorrect user Object.";
+            responseAnswer = "Incorrect department Object.";
         }
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);

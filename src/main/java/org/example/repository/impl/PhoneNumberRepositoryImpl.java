@@ -3,6 +3,7 @@ package org.example.repository.impl;
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
 import org.example.model.PhoneNumber;
+import org.example.model.User;
 import org.example.repository.PhoneNumberRepository;
 import org.example.repository.exception.RepositoryException;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
     private static PhoneNumberRepository instance;
-    private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
+    private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
 
     private PhoneNumberRepositoryImpl() {
     }
@@ -70,6 +71,14 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
     private static final String FIND_ALL_SQL = """
             SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers;
             """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM phonenumbers
+                        WHERE phonenumber_id = ?
+                        LIMIT 1);
+            """;
+
 
     @Override
     public PhoneNumber save(PhoneNumber phoneNumber) {
@@ -77,10 +86,10 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
              PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, phoneNumber.getNumber());
-            if (phoneNumber.getUserId() == null) {
+            if (phoneNumber.getUser() == null) {
                 preparedStatement.setNull(2, Types.NULL);
             } else {
-                preparedStatement.setLong(2, phoneNumber.getUserId());
+                preparedStatement.setLong(2, phoneNumber.getUser().getId());
             }
             preparedStatement.executeUpdate();
 
@@ -101,10 +110,10 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL);) {
 
             preparedStatement.setString(1, phoneNumber.getNumber());
-            if (phoneNumber.getUserId() == null) {
+            if (phoneNumber.getUser() == null) {
                 preparedStatement.setNull(2, Types.NULL);
             } else {
-                preparedStatement.setLong(2, phoneNumber.getUserId());
+                preparedStatement.setLong(2, phoneNumber.getUser().getId());
             }
             preparedStatement.setLong(3, phoneNumber.getId());
 
@@ -202,10 +211,18 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
 
     private static PhoneNumber createPhoneNumber(ResultSet resultSet) throws SQLException {
         PhoneNumber phoneNumber;
+        User user = new User(
+                resultSet.getLong("user_id"),
+                null,
+                null,
+                null,
+                List.of(),
+                List.of()
+        );
         phoneNumber = new PhoneNumber(
                 resultSet.getLong("phonenumber_id"),
                 resultSet.getString("phonenumber_number"),
-                resultSet.getLong("user_id"));
+                user);
         return phoneNumber;
     }
 
@@ -223,6 +240,24 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             throw new RepositoryException(e);
         }
         return phoneNumberList;
+    }
+
+    @Override
+    public boolean exitsById(Long id) {
+        boolean isExists = false;
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(EXIST_BY_ID_SQL)) {
+
+            preparedStatement.setLong(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                isExists = resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+        return isExists;
     }
 
     @Override

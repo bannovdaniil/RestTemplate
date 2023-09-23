@@ -7,11 +7,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.repository.exception.NotFoundException;
-import org.example.service.UserService;
-import org.example.service.impl.UserServiceImpl;
-import org.example.servlet.dto.UserIncomingDto;
-import org.example.servlet.dto.UserOutGoingDto;
-import org.example.servlet.dto.UserUpdateDto;
+import org.example.service.PhoneNumberService;
+import org.example.service.impl.PhoneNumberServiceImpl;
+import org.example.servlet.dto.PhoneNumberIncomingDto;
+import org.example.servlet.dto.PhoneNumberOutGoingDto;
+import org.example.servlet.dto.PhoneNumberUpdateDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,12 +20,13 @@ import java.util.List;
 import java.util.Optional;
 
 
-@WebServlet(urlPatterns = {"/user/*"})
-public class UserServlet extends HttpServlet {
-    private static final UserService userService = UserServiceImpl.getInstance();
+@WebServlet(urlPatterns = {"/phone/*"})
+public class PhoneNumberServlet extends HttpServlet {
+    private final PhoneNumberService phoneNumberService;
     private final ObjectMapper objectMapper;
 
-    public UserServlet() {
+    public PhoneNumberServlet() {
+        this.phoneNumberService = PhoneNumberServiceImpl.getInstance();
         this.objectMapper = new ObjectMapper();
     }
 
@@ -37,14 +38,14 @@ public class UserServlet extends HttpServlet {
         try {
             String[] pathPart = req.getPathInfo().split("/");
             if ("all".equals(pathPart[1])) {
-                List<UserOutGoingDto> userDtoList = userService.findAll();
+                List<PhoneNumberOutGoingDto> phoneNumberDtoList = phoneNumberService.findAll();
                 resp.setStatus(HttpServletResponse.SC_OK);
-                responseAnswer = objectMapper.writeValueAsString(userDtoList);
+                responseAnswer = objectMapper.writeValueAsString(phoneNumberDtoList);
             } else {
-                Long userId = Long.parseLong(pathPart[1]);
-                UserOutGoingDto userDto = userService.findById(userId);
+                Long phoneNumberId = Long.parseLong(pathPart[1]);
+                PhoneNumberOutGoingDto phoneNumberDto = phoneNumberService.findById(phoneNumberId);
                 resp.setStatus(HttpServletResponse.SC_OK);
-                responseAnswer = objectMapper.writeValueAsString(userDto);
+                responseAnswer = objectMapper.writeValueAsString(phoneNumberDto);
             }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -59,17 +60,18 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
-            Long userId = Long.parseLong(pathPart[1]);
-            resp.setStatus(HttpServletResponse.SC_OK);
-            userService.delete(userId);
-        } catch (NotFoundException e) {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            responseAnswer = e.getMessage();
+            Long phoneNumberId = Long.parseLong(pathPart[1]);
+            if (phoneNumberService.delete(phoneNumberId)) {
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
@@ -85,14 +87,14 @@ public class UserServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = null;
-        Optional<UserIncomingDto> userResponse;
+        Optional<PhoneNumberIncomingDto> phoneNumberResponse;
         try {
-            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserIncomingDto.class));
-            UserIncomingDto user = userResponse.orElseThrow(IllegalArgumentException::new);
-            responseAnswer = objectMapper.writeValueAsString(userService.save(user));
+            phoneNumberResponse = Optional.ofNullable(objectMapper.readValue(json, PhoneNumberIncomingDto.class));
+            PhoneNumberIncomingDto phoneNumber = phoneNumberResponse.orElseThrow(IllegalArgumentException::new);
+            responseAnswer = objectMapper.writeValueAsString(phoneNumberService.save(phoneNumber));
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Incorrect user Object.";
+            responseAnswer = "Incorrect phoneNumber Object.";
         }
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
@@ -105,17 +107,17 @@ public class UserServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = "";
-        Optional<UserUpdateDto> userResponse;
+        Optional<PhoneNumberUpdateDto> phoneNumberResponse;
         try {
-            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserUpdateDto.class));
-            UserUpdateDto userUpdateDto = userResponse.orElseThrow(IllegalArgumentException::new);
-            userService.update(userUpdateDto);
+            phoneNumberResponse = Optional.ofNullable(objectMapper.readValue(json, PhoneNumberUpdateDto.class));
+            PhoneNumberUpdateDto phoneNumberUpdateDto = phoneNumberResponse.orElseThrow(IllegalArgumentException::new);
+            phoneNumberService.update(phoneNumberUpdateDto);
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             responseAnswer = e.getMessage();
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Incorrect user Object.";
+            responseAnswer = "Incorrect phoneNumber Object.";
         }
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);

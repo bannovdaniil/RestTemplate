@@ -13,4 +13,6 @@ public interface Repository<T, K> {
     Optional<T> findById(K id);
 
     List<T> findAll();
+
+    boolean exitsById(K id);
 }

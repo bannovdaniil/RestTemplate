@@ -7,11 +7,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.repository.exception.NotFoundException;
-import org.example.service.UserService;
-import org.example.service.impl.UserServiceImpl;
-import org.example.servlet.dto.UserIncomingDto;
-import org.example.servlet.dto.UserOutGoingDto;
-import org.example.servlet.dto.UserUpdateDto;
+import org.example.service.RoleService;
+import org.example.service.impl.RoleServiceImpl;
+import org.example.servlet.dto.RoleIncomingDto;
+import org.example.servlet.dto.RoleOutGoingDto;
+import org.example.servlet.dto.RoleUpdateDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,31 +20,33 @@ import java.util.List;
 import java.util.Optional;
 
 
-@WebServlet(urlPatterns = {"/user/*"})
-public class UserServlet extends HttpServlet {
-    private static final UserService userService = UserServiceImpl.getInstance();
+@WebServlet(urlPatterns = {"/role/*"})
+public class RoleServlet extends HttpServlet {
+    private final RoleService roleService;
     private final ObjectMapper objectMapper;
 
-    public UserServlet() {
+    public RoleServlet() {
+        this.roleService = RoleServiceImpl.getInstance();
         this.objectMapper = new ObjectMapper();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
+
 
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
             if ("all".equals(pathPart[1])) {
-                List<UserOutGoingDto> userDtoList = userService.findAll();
+                List<RoleOutGoingDto> roleDtoList = roleService.findAll();
                 resp.setStatus(HttpServletResponse.SC_OK);
-                responseAnswer = objectMapper.writeValueAsString(userDtoList);
+                responseAnswer = objectMapper.writeValueAsString(roleDtoList);
             } else {
-                Long userId = Long.parseLong(pathPart[1]);
-                UserOutGoingDto userDto = userService.findById(userId);
+                Long roleId = Long.parseLong(pathPart[1]);
+                RoleOutGoingDto roleDto = roleService.findById(roleId);
                 resp.setStatus(HttpServletResponse.SC_OK);
-                responseAnswer = objectMapper.writeValueAsString(userDto);
+                responseAnswer = objectMapper.writeValueAsString(roleDto);
             }
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -59,17 +61,18 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
-            Long userId = Long.parseLong(pathPart[1]);
-            resp.setStatus(HttpServletResponse.SC_OK);
-            userService.delete(userId);
-        } catch (NotFoundException e) {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            responseAnswer = e.getMessage();
+            Long roleId = Long.parseLong(pathPart[1]);
+            if (roleService.delete(roleId)) {
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseAnswer = "Bad request.";
@@ -85,14 +88,14 @@ public class UserServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = null;
-        Optional<UserIncomingDto> userResponse;
+        Optional<RoleIncomingDto> roleResponse;
         try {
-            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserIncomingDto.class));
-            UserIncomingDto user = userResponse.orElseThrow(IllegalArgumentException::new);
-            responseAnswer = objectMapper.writeValueAsString(userService.save(user));
+            roleResponse = Optional.ofNullable(objectMapper.readValue(json, RoleIncomingDto.class));
+            RoleIncomingDto role = roleResponse.orElseThrow(IllegalArgumentException::new);
+            responseAnswer = objectMapper.writeValueAsString(roleService.save(role));
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Incorrect user Object.";
+            responseAnswer = "Incorrect role Object.";
         }
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
@@ -105,17 +108,17 @@ public class UserServlet extends HttpServlet {
         String json = getJson(req);
 
         String responseAnswer = "";
-        Optional<UserUpdateDto> userResponse;
+        Optional<RoleUpdateDto> roleResponse;
         try {
-            userResponse = Optional.ofNullable(objectMapper.readValue(json, UserUpdateDto.class));
-            UserUpdateDto userUpdateDto = userResponse.orElseThrow(IllegalArgumentException::new);
-            userService.update(userUpdateDto);
+            roleResponse = Optional.ofNullable(objectMapper.readValue(json, RoleUpdateDto.class));
+            RoleUpdateDto roleUpdateDto = roleResponse.orElseThrow(IllegalArgumentException::new);
+            roleService.update(roleUpdateDto);
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             responseAnswer = e.getMessage();
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Incorrect user Object.";
+            responseAnswer = "Incorrect role Object.";
         }
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);

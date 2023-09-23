@@ -1,22 +1,28 @@
 package org.example.model;
 
+import org.example.repository.UserRepository;
+import org.example.repository.impl.UserRepositoryImpl;
+
 /**
  * The Phone Number of User
+ * Lazy User getter from Repository.
  * Relation:
  * One To One: PhoneNumber - User
  */
 public class PhoneNumber {
     private Long id;
     private String number;
-    private Long userId;
+    private User user;
+
+    private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
 
     public PhoneNumber() {
     }
 
-    public PhoneNumber(Long id, String number, Long userId) {
+    public PhoneNumber(Long id, String number, User user) {
         this.id = id;
         this.number = number;
-        this.userId = userId;
+        this.user = user;
     }
 
     public Long getId() {
@@ -35,20 +41,16 @@ public class PhoneNumber {
         this.number = number;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        if (user != null && user.getId() > 0 && user.getFirstName() == null) {
+            this.user = userRepository.findById(user.getId()).orElse(user);
+        } else if (user != null && user.getId() == 0) {
+            this.user = null;
+        }
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return "PhoneNumber{" +
-               "id=" + id +
-               ", number='" + number + '\'' +
-               ", userId=" + userId +
-               '}';
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -1,20 +1,19 @@
 package org.example.servlet.mapper;
 
-import org.example.model.PhoneNumber;
-import org.example.model.Role;
 import org.example.model.User;
-import org.example.servlet.dto.*;
+import org.example.servlet.dto.UserIncomingDto;
+import org.example.servlet.dto.UserOutGoingDto;
+import org.example.servlet.dto.UserUpdateDto;
 
 import java.util.List;
 
 public interface UserDtoMapper {
-    User map(UserIncomingDto userIncomingDto,
-             Role role,
-             List<PhoneNumber> phoneNumberList,
-             List<Long> departmentIdList);
+    User map(UserIncomingDto userIncomingDto);
 
-    UserOutGoingDto map(User user,
-                        RoleOutGoingDto role,
-                        List<PhoneNumberOutGoingDto> phoneNumberList,
-                        List<DepartmentOutGoingDto> departmentList);
+    User map(UserUpdateDto userIncomingDto);
+
+    UserOutGoingDto map(User user);
+
+    List<UserOutGoingDto> map(List<User> user);
+
 }
