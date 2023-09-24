@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.example.model.PhoneNumber;
 import org.example.repository.PhoneNumberRepository;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.repository.impl.PhoneNumberRepositoryImpl;
 import org.example.service.PhoneNumberService;
 import org.example.servlet.dto.PhoneNumberIncomingDto;

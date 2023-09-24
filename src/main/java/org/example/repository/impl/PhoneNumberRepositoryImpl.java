@@ -5,7 +5,7 @@ import org.example.db.ConnectionManagerImpl;
 import org.example.model.PhoneNumber;
 import org.example.model.User;
 import org.example.repository.PhoneNumberRepository;
-import org.example.repository.exception.RepositoryException;
+import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;

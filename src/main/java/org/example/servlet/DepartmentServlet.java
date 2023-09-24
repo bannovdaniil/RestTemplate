@@ -6,7 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.service.DepartmentService;
 import org.example.service.impl.DepartmentServiceImpl;
 import org.example.servlet.dto.DepartmentIncomingDto;

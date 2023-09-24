@@ -6,7 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.service.PhoneNumberService;
 import org.example.service.impl.PhoneNumberServiceImpl;
 import org.example.servlet.dto.PhoneNumberIncomingDto;
@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/phone/*"})
 public class PhoneNumberServlet extends HttpServlet {
-    private final PhoneNumberService phoneNumberService;
+    private final transient PhoneNumberService phoneNumberService;
     private final ObjectMapper objectMapper;
 
     public PhoneNumberServlet() {

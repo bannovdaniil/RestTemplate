@@ -8,7 +8,7 @@ import org.example.model.UserToDepartment;
 import org.example.repository.DepartmentRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserToDepartmentRepository;
-import org.example.repository.exception.RepositoryException;
+import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;

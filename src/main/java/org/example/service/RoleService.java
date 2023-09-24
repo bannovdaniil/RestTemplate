@@ -1,6 +1,6 @@
 package org.example.service;
 
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.servlet.dto.RoleIncomingDto;
 import org.example.servlet.dto.RoleOutGoingDto;
 import org.example.servlet.dto.RoleUpdateDto;

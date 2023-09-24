@@ -4,7 +4,7 @@ import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
 import org.example.model.*;
 import org.example.repository.*;
-import org.example.repository.exception.RepositoryException;
+import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;

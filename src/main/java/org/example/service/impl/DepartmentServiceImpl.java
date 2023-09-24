@@ -5,7 +5,7 @@ import org.example.model.UserToDepartment;
 import org.example.repository.DepartmentRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserToDepartmentRepository;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.repository.impl.DepartmentRepositoryImpl;
 import org.example.repository.impl.UserRepositoryImpl;
 import org.example.repository.impl.UserToDepartmentRepositoryImpl;

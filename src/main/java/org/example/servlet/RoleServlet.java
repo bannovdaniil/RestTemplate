@@ -6,7 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.service.RoleService;
 import org.example.service.impl.RoleServiceImpl;
 import org.example.servlet.dto.RoleIncomingDto;
@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/role/*"})
 public class RoleServlet extends HttpServlet {
-    private final RoleService roleService;
+    private final transient RoleService roleService;
     private final ObjectMapper objectMapper;
 
     public RoleServlet() {

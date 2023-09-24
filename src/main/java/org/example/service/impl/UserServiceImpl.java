@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.example.model.User;
 import org.example.repository.UserRepository;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.repository.impl.UserRepositoryImpl;
 import org.example.service.UserService;
 import org.example.servlet.dto.UserIncomingDto;

@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.example.model.Role;
 import org.example.repository.RoleRepository;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.repository.impl.RoleRepositoryImpl;
 import org.example.service.RoleService;
 import org.example.servlet.dto.RoleIncomingDto;
