@@ -8,11 +8,14 @@ import org.example.model.PhoneNumber;
 import org.example.repository.PhoneNumberRepository;
 import org.example.util.PropertiesUtil;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.ext.ScriptUtils;
 import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 import org.testcontainers.junit.jupiter.Container;
 
+import java.util.List;
 import java.util.Optional;
 
 class PhoneNumberRepositoryImplTest {
@@ -81,38 +84,113 @@ class PhoneNumberRepositoryImplTest {
 
         Assertions.assertNotEquals(expectedNumber, oldPhoneNumber);
         Assertions.assertEquals(expectedNumber, number.getNumber());
-
     }
 
+    @DisplayName("Delete by ID")
     @Test
     void deleteById() {
+        Boolean expectedValue = true;
+        int expectedSize = phoneNumberRepository.findAll().size();
+
+        PhoneNumber tempNumber = new PhoneNumber(null, "+(temp) number", null);
+        tempNumber = phoneNumberRepository.save(tempNumber);
+
+        boolean resultDelete = phoneNumberRepository.deleteById(tempNumber.getId());
+        List<PhoneNumber> phoneNumberListAfter = phoneNumberRepository.findAll();
+
+        Assertions.assertEquals(expectedValue, resultDelete);
+        Assertions.assertEquals(expectedSize, phoneNumberListAfter.size());
+
     }
 
+    @DisplayName("Delete by ID")
     @Test
     void deleteByUserId() {
+        Boolean expectedValue = true;
+        int expectedSize = phoneNumberRepository.findAll().size() - phoneNumberRepository.findAllByUserId(1L).size();
+
+        boolean resultDelete = phoneNumberRepository.deleteByUserId(1L);
+
+        int resultSize = phoneNumberRepository.findAll().size();
+        Assertions.assertEquals(expectedValue, resultDelete);
+        Assertions.assertEquals(expectedSize, resultSize);
     }
 
-    @Test
-    void existsByNumber() {
+    @DisplayName("Check exist by Phone number.")
+    @ParameterizedTest
+    @CsvSource(value = {
+            "'+1(123)123 5555',true",
+            "'not exits number', false"
+    })
+    void existsByNumber(String number, Boolean expectedValue) {
+        boolean isExist = phoneNumberRepository.existsByNumber(number);
+
+        Assertions.assertEquals(expectedValue, isExist);
     }
 
-    @Test
-    void findByNumber() {
+    @DisplayName("Find by Phone number.")
+    @ParameterizedTest
+    @CsvSource(value = {
+            "'+1(123)123 5555',true",
+            "'not exits number', false"
+    })
+    void findByNumber(String findNumber, Boolean expectedValue) {
+        Optional<PhoneNumber> phoneNumber = phoneNumberRepository.findByNumber(findNumber);
+
+        Assertions.assertEquals(expectedValue, phoneNumber.isPresent());
+        if (phoneNumber.isPresent()) {
+            Assertions.assertEquals(findNumber, phoneNumber.get().getNumber());
+        }
     }
 
-    @Test
-    void findById() {
+    @DisplayName("Find by ID")
+    @ParameterizedTest
+    @CsvSource(value = {
+            "1, true",
+            "4, true",
+            "1000, false"
+    })
+    void findById(Long expectedId, Boolean expectedValue) {
+        Optional<PhoneNumber> phoneNumber = phoneNumberRepository.findById(expectedId);
+
+        Assertions.assertEquals(expectedValue, phoneNumber.isPresent());
+        if (phoneNumber.isPresent()) {
+            Assertions.assertEquals(expectedId, phoneNumber.get().getId());
+        }
     }
 
     @Test
     void findAll() {
+        int expectedSize = 9;
+        int resultSize = phoneNumberRepository.findAll().size();
+
+        Assertions.assertEquals(expectedSize, resultSize);
     }
 
-    @Test
-    void exitsById() {
+    @DisplayName("Exist by ID")
+    @ParameterizedTest
+    @CsvSource(value = {
+            "1, true",
+            "4, true",
+            "1000, false"
+    })
+    void exitsById(Long expectedId, Boolean expectedValue) {
+        Boolean resultValue = phoneNumberRepository.exitsById(expectedId);
+
+        Assertions.assertEquals(expectedValue, resultValue);
     }
 
-    @Test
-    void findAllByUserId() {
+    @DisplayName("Find by UserId")
+    @ParameterizedTest
+    @CsvSource(value = {
+            "1, 2",
+            "2, 2",
+            "3, 1",
+            "1000, 0"
+    })
+    void findAllByUserId(Long userId, int expectedSize) {
+        int resultSize = phoneNumberRepository.findAllByUserId(userId).size();
+
+        Assertions.assertEquals(expectedSize, resultSize);
     }
 }
