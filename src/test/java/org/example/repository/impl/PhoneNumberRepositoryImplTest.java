@@ -15,7 +15,6 @@ import org.testcontainers.ext.ScriptUtils;
 import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 import org.testcontainers.junit.jupiter.Container;
 
-import java.util.List;
 import java.util.Optional;
 
 class PhoneNumberRepositoryImplTest {
@@ -63,11 +62,10 @@ class PhoneNumberRepositoryImplTest {
                 null
         );
         phoneNumber = phoneNumberRepository.save(phoneNumber);
-        Optional<PhoneNumber> expectedPhone = phoneNumberRepository.findById(phoneNumber.getId());
+        Optional<PhoneNumber> resultPhone = phoneNumberRepository.findById(phoneNumber.getId());
 
-        Assertions.assertTrue(expectedPhone.isPresent());
-        Assertions.assertEquals(expectedNumber, expectedPhone.get().getNumber());
-
+        Assertions.assertTrue(resultPhone.isPresent());
+        Assertions.assertEquals(expectedNumber, resultPhone.get().getNumber());
     }
 
     @Test
@@ -95,12 +93,14 @@ class PhoneNumberRepositoryImplTest {
         PhoneNumber tempNumber = new PhoneNumber(null, "+(temp) number", null);
         tempNumber = phoneNumberRepository.save(tempNumber);
 
+        int resultSizeBefore = phoneNumberRepository.findAll().size();
+        Assertions.assertNotEquals(expectedSize, resultSizeBefore);
+
         boolean resultDelete = phoneNumberRepository.deleteById(tempNumber.getId());
-        List<PhoneNumber> phoneNumberListAfter = phoneNumberRepository.findAll();
+        int resultSizeListAfter = phoneNumberRepository.findAll().size();
 
         Assertions.assertEquals(expectedValue, resultDelete);
-        Assertions.assertEquals(expectedSize, phoneNumberListAfter.size());
-
+        Assertions.assertEquals(expectedSize, resultSizeListAfter);
     }
 
     @DisplayName("Delete by ID")

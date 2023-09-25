@@ -4,8 +4,8 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
-import org.example.model.Role;
-import org.example.repository.RoleRepository;
+import org.example.model.Department;
+import org.example.repository.DepartmentRepository;
 import org.example.util.PropertiesUtil;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Testcontainers
 @Tag("DockerRequired")
-class RoleRepositoryImplTest {
+class DepartmentRepositoryImplTest {
     private static final String INIT_SQL = "sql/schema.sql";
     private static int containerPort = 5432;
     private static int localPort = 5432;
@@ -38,12 +38,12 @@ class RoleRepositoryImplTest {
             ))
             .withInitScript(INIT_SQL);
 
-    public static RoleRepository roleRepository;
+    public static DepartmentRepository departmentRepository;
 
     @BeforeAll
     static void beforeAll() {
         container.start();
-        roleRepository = RoleRepositoryImpl.getInstance();
+        departmentRepository = DepartmentRepositoryImpl.getInstance();
         jdbcDatabaseDelegate = new JdbcDatabaseDelegate(container, "");
     }
 
@@ -59,67 +59,77 @@ class RoleRepositoryImplTest {
 
     @Test
     void save() {
-        String expectedName = "new Role Name";
-        Role role = new Role(null, expectedName);
-        role = roleRepository.save(role);
-        Optional<Role> resultRole = roleRepository.findById(role.getId());
+        String expectedName = "new Department Yo!";
+        Department department = new Department(
+                null,
+                expectedName,
+                null
+        );
+        department = departmentRepository.save(department);
+        Optional<Department> resultDepartment = departmentRepository.findById(department.getId());
 
-        Assertions.assertTrue(resultRole.isPresent());
-        Assertions.assertEquals(expectedName, resultRole.get().getName());
+        Assertions.assertTrue(resultDepartment.isPresent());
+        Assertions.assertEquals(expectedName, resultDepartment.get().getName());
+
     }
 
     @Test
     void update() {
-        String expectedName = "UPDATE Role Name";
+        String expectedName = "Update department name";
 
-        Role roleForUpdate = roleRepository.findById(3L).get();
-        String oldRoleName = roleForUpdate.getName();
+        Department department = departmentRepository.findById(2L).get();
+        String oldName = department.getName();
+        int expectedSizeUserList = department.getUserList().size();
+        department.setName(expectedName);
+        departmentRepository.update(department);
 
-        roleForUpdate.setName(expectedName);
-        roleRepository.update(roleForUpdate);
+        Department resultDepartment = departmentRepository.findById(2L).get();
+        int resultSizeUserList = resultDepartment.getUserList().size();
 
-        Role role = roleRepository.findById(3L).get();
-
-        Assertions.assertNotEquals(expectedName, oldRoleName);
-        Assertions.assertEquals(expectedName, role.getName());
+        Assertions.assertNotEquals(expectedName, oldName);
+        Assertions.assertEquals(expectedName, resultDepartment.getName());
+        Assertions.assertEquals(expectedSizeUserList, resultSizeUserList);
     }
 
-    @DisplayName("Delete by ID")
     @Test
     void deleteById() {
         Boolean expectedValue = true;
-        int expectedSize = 5;
+        int expectedSize = departmentRepository.findAll().size();
 
-        Role tempRole = new Role(null, "Role for delete.");
-        tempRole = roleRepository.save(tempRole);
+        Department tempDepartment = new Department(null, "New department", List.of());
+        tempDepartment = departmentRepository.save(tempDepartment);
 
-        boolean resultDelete = roleRepository.deleteById(tempRole.getId());
-        List<Role> roleListAfter = roleRepository.findAll();
+        int resultSizeBefore = departmentRepository.findAll().size();
+        Assertions.assertNotEquals(expectedSize, resultSizeBefore);
+
+        boolean resultDelete = departmentRepository.deleteById(tempDepartment.getId());
+        int resultSizeAfter = departmentRepository.findAll().size();
 
         Assertions.assertEquals(expectedValue, resultDelete);
-        Assertions.assertEquals(expectedSize, roleListAfter.size());
-    }
+        Assertions.assertEquals(expectedSize, resultSizeAfter);
 
+    }
 
     @DisplayName("Find by ID")
     @ParameterizedTest
     @CsvSource(value = {
-            "1; true",
-            "4; true",
-            "100; false"
-    }, delimiter = ';')
+            "1, true",
+            "4, true",
+            "1000, false"
+    })
     void findById(Long expectedId, Boolean expectedValue) {
-        Optional<Role> role = roleRepository.findById(expectedId);
-        Assertions.assertEquals(expectedValue, role.isPresent());
-        if (role.isPresent()) {
-            Assertions.assertEquals(expectedId, role.get().getId());
+        Optional<Department> department = departmentRepository.findById(expectedId);
+
+        Assertions.assertEquals(expectedValue, department.isPresent());
+        if (department.isPresent()) {
+            Assertions.assertEquals(expectedId, department.get().getId());
         }
     }
 
     @Test
     void findAll() {
-        int expectedSize = 5;
-        int resultSize = roleRepository.findAll().size();
+        int expectedSize = 4;
+        int resultSize = departmentRepository.findAll().size();
 
         Assertions.assertEquals(expectedSize, resultSize);
     }
@@ -131,8 +141,8 @@ class RoleRepositoryImplTest {
             "4; true",
             "100; false"
     }, delimiter = ';')
-    void exitsById(Long roleId, Boolean expectedValue) {
-        boolean isRoleExist = roleRepository.exitsById(roleId);
+    void exitsById(Long departmentId, Boolean expectedValue) {
+        boolean isRoleExist = departmentRepository.exitsById(departmentId);
 
         Assertions.assertEquals(expectedValue, isRoleExist);
     }
