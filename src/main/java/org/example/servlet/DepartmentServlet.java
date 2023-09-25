@@ -66,10 +66,11 @@ public class DepartmentServlet extends HttpServlet {
             String[] pathPart = req.getPathInfo().split("/");
             Long departmentId = Long.parseLong(pathPart[1]);
             resp.setStatus(HttpServletResponse.SC_OK);
-
-            if ("deleteUser".equals(pathPart[2])) {
-                Long userId = Long.parseLong(pathPart[3]);
-                departmentService.deleteUserFromDepartment(departmentId, userId);
+            if (req.getPathInfo().contains("/deleteUser/")) {
+                if ("deleteUser".equals(pathPart[2])) {
+                    Long userId = Long.parseLong(pathPart[3]);
+                    departmentService.deleteUserFromDepartment(departmentId, userId);
+                }
             } else {
                 departmentService.delete(departmentId);
             }
@@ -78,7 +79,7 @@ public class DepartmentServlet extends HttpServlet {
             responseAnswer = e.getMessage();
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseAnswer = "Bad request.";
+            responseAnswer = "Bad request. ";
         }
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
@@ -115,7 +116,7 @@ public class DepartmentServlet extends HttpServlet {
         try {
             if (req.getPathInfo().contains("/addUser/")) {
                 String[] pathPart = req.getPathInfo().split("/");
-                if ("addUser".equals(pathPart[2])) {
+                if (pathPart.length > 3 && "addUser".equals(pathPart[2])) {
                     Long departmentId = Long.parseLong(pathPart[1]);
                     resp.setStatus(HttpServletResponse.SC_OK);
                     Long userId = Long.parseLong(pathPart[3]);

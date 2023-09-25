@@ -79,12 +79,16 @@
 					"response": []
 				},
 				{
-					"name": "Delete tole #6",
+					"name": "Update role name",
 					"request": {
-						"method": "DELETE",
+						"method": "PUT",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"name\": \"5 Edit Admin\"\r\n}"
+						},
 						"url": {
-							"raw": "http://localhost:8080/role/8",
+							"raw": "http://localhost:8080/role/",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -92,30 +96,27 @@
 							"port": "8080",
 							"path": [
 								"role",
-								"8"
+								""
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Update role name",
+					"name": "Delete role #6",
 					"request": {
-						"method": "PUT",
+						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 80,\r\n    \"name\": \"5 Edit Admin\"\r\n}"
-						},
 						"url": {
-							"raw": "http://localhost:8080/role",
+							"raw": "http://localhost:8080/role/6",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"role"
+								"role",
+								"6"
 							]
 						}
 					},
@@ -250,7 +251,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"number\": \"+7 888 123 1234\"\r\n}",
+							"raw": "{\r\n    \"name\": \"new department\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -258,14 +259,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/phone/",
+							"raw": "http://localhost:8080/department/",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"phone",
+								"department",
 								""
 							]
 						}
@@ -318,7 +319,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/department/10",
+							"raw": "http://localhost:8080/department/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -326,7 +327,7 @@
 							"port": "8080",
 							"path": [
 								"department",
-								"10"
+								"2"
 							]
 						}
 					},
@@ -386,14 +387,15 @@
 							"raw": "{\r\n  \"id\": 2,\r\n  \"name\": \"Edit BackEnd разработка\"\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/department",
+							"raw": "http://localhost:8080/department/",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"department"
+								"department",
+								""
 							]
 						}
 					},
@@ -439,7 +441,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/user/1",
+							"raw": "http://localhost:8080/user/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -447,7 +449,7 @@
 							"port": "8080",
 							"path": [
 								"user",
-								"1"
+								"7"
 							]
 						}
 					},
@@ -479,7 +481,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/user/20",
+							"raw": "http://localhost:8080/user/8",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -487,7 +489,7 @@
 							"port": "8080",
 							"path": [
 								"user",
-								"20"
+								"8"
 							]
 						}
 					},
