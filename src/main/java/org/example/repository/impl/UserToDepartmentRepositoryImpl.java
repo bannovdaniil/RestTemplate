@@ -2,13 +2,13 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.Department;
 import org.example.model.User;
 import org.example.model.UserToDepartment;
 import org.example.repository.DepartmentRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserToDepartmentRepository;
-import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -94,7 +94,11 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                userToDepartment.setId(resultSet.getLong("users_departments_id"));
+                userToDepartment = new UserToDepartment(
+                        resultSet.getLong("users_departments_id"),
+                        userToDepartment.getUserId(),
+                        userToDepartment.getDepartmentId()
+                );
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);

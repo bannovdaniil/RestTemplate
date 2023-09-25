@@ -2,10 +2,10 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.PhoneNumber;
 import org.example.model.User;
 import org.example.repository.PhoneNumberRepository;
-import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -95,7 +95,12 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                phoneNumber.setId(resultSet.getLong("phonenumber_id"));
+
+                phoneNumber = new PhoneNumber(
+                        resultSet.getLong("phonenumber_id"),
+                        phoneNumber.getNumber(),
+                        phoneNumber.getUser()
+                );
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);

@@ -2,9 +2,9 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.Department;
 import org.example.repository.DepartmentRepository;
-import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -70,7 +70,12 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                department.setId(resultSet.getLong("department_id"));
+                department = new Department(
+                        resultSet.getLong("department_id"),
+                        department.getName(),
+                        null
+                );
+                department.getUserList();
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);
@@ -132,7 +137,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
         department = new Department(
                 resultSet.getLong("department_id"),
                 resultSet.getString("department_name"),
-                List.of());
+                null);
         return department;
     }
 

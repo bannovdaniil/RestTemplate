@@ -2,9 +2,9 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.Role;
 import org.example.repository.RoleRepository;
-import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -69,7 +69,9 @@ public class RoleRepositoryImpl implements RoleRepository {
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                role.setId(resultSet.getLong("role_id"));
+                role = new Role(
+                        resultSet.getLong("role_id"),
+                        role.getName());
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);

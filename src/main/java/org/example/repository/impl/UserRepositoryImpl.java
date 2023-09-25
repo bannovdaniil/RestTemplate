@@ -2,9 +2,9 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.*;
 import org.example.repository.*;
-import org.example.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -91,10 +91,19 @@ public class UserRepositoryImpl implements UserRepository {
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                user.setId(resultSet.getLong("user_id"));
+                user = new User(
+                        resultSet.getLong("user_id"),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getRole(),
+                        null,
+                        null
+                );
             }
             savePhoneNumberList(user);
             saveDepartmentList(user);
+            user.getPhoneNumberList();
+            user.getDepartmentList();
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
@@ -202,7 +211,10 @@ public class UserRepositoryImpl implements UserRepository {
             if (exitNumber.isPresent()
                 && exitNumber.get().getUser() != null
                 && exitNumber.get().getUser().getId() > 0) {
-                phoneNumber.setId(exitNumber.get().getId());
+                phoneNumber = new PhoneNumber(exitNumber.get().getId(),
+                        exitNumber.get().getNumber(),
+                        exitNumber.get().getUser()
+                );
                 phoneNumberRepository.update(phoneNumber);
 
             }
