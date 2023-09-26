@@ -16,15 +16,14 @@ import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
 import java.util.Optional;
 
 @Testcontainers
 @Tag("DockerRequired")
 class RoleRepositoryImplTest {
     private static final String INIT_SQL = "sql/schema.sql";
-    private static int containerPort = 5432;
-    private static int localPort = 5432;
+    private static final int containerPort = 5432;
+    private static final int localPort = 5432;
     private static JdbcDatabaseDelegate jdbcDatabaseDelegate;
 
     @Container
@@ -88,16 +87,16 @@ class RoleRepositoryImplTest {
     @Test
     void deleteById() {
         Boolean expectedValue = true;
-        int expectedSize = 5;
+        int expectedSize = roleRepository.findAll().size();
 
         Role tempRole = new Role(null, "Role for delete.");
         tempRole = roleRepository.save(tempRole);
 
         boolean resultDelete = roleRepository.deleteById(tempRole.getId());
-        List<Role> roleListAfter = roleRepository.findAll();
+        int roleListAfterSize = roleRepository.findAll().size();
 
         Assertions.assertEquals(expectedValue, resultDelete);
-        Assertions.assertEquals(expectedSize, roleListAfter.size());
+        Assertions.assertEquals(expectedSize, roleListAfterSize);
     }
 
 
