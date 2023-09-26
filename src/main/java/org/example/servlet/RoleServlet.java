@@ -34,7 +34,6 @@ public class RoleServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setJsonHeader(resp);
 
-
         String responseAnswer = "";
         try {
             String[] pathPart = req.getPathInfo().split("/");
