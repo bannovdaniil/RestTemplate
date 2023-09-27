@@ -26,48 +26,25 @@ public class UserUpdateDto {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public RoleUpdateDto getRole() {
         return role;
-    }
-
-    public void setRole(RoleUpdateDto role) {
-        this.role = role;
     }
 
     public List<PhoneNumberUpdateDto> getPhoneNumberList() {
         return phoneNumberList;
     }
 
-    public void setPhoneNumberList(List<PhoneNumberUpdateDto> phoneNumberList) {
-        this.phoneNumberList = phoneNumberList;
-    }
-
     public List<DepartmentUpdateDto> getDepartmentList() {
         return departmentList;
     }
 
-    public void setDepartmentList(List<DepartmentUpdateDto> departmentList) {
-        this.departmentList = departmentList;
-    }
 }
 
