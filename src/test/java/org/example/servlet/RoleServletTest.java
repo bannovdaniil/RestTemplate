@@ -164,6 +164,51 @@ class RoleServletTest {
     }
 
     @Test
-    void doPut() {
+    void doPut() throws IOException, NotFoundException {
+        String expectedName = "Update role Admin";
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\": 4,\"name\": \"" +
+                        expectedName + "\"}",
+                null
+        ).when(mockBufferedReader).readLine();
+
+        roleServlet.doPut(mockRequest, mockResponse);
+
+        ArgumentCaptor<RoleUpdateDto> argumentCaptor = ArgumentCaptor.forClass(RoleUpdateDto.class);
+        Mockito.verify(mockRoleService).update(argumentCaptor.capture());
+
+        RoleUpdateDto result = argumentCaptor.getValue();
+        Assertions.assertEquals(expectedName, result.getName());
     }
+
+    @Test
+    void doPutBadRequest() throws IOException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{Bad json:1}",
+                null
+        ).when(mockBufferedReader).readLine();
+
+        roleServlet.doPut(mockRequest, mockResponse);
+
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doPutNotFound() throws IOException, NotFoundException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\": 4,\"name\": \"Admin\"}",
+                null
+        ).when(mockBufferedReader).readLine();
+        Mockito.doThrow(new NotFoundException("not found.")).when(mockRoleService)
+                .update(Mockito.any(RoleUpdateDto.class));
+
+        roleServlet.doPut(mockRequest, mockResponse);
+
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        Mockito.verify(mockRoleService).update(Mockito.any(RoleUpdateDto.class));
+    }
+
 }
