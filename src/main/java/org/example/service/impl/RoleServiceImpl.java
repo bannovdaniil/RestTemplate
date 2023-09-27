@@ -14,8 +14,8 @@ import org.example.servlet.mapper.impl.RoleDtoMapperImpl;
 import java.util.List;
 
 public class RoleServiceImpl implements RoleService {
+    private RoleRepository roleRepository = RoleRepositoryImpl.getInstance();
     private static RoleService instance;
-    private final RoleRepository roleRepository = RoleRepositoryImpl.getInstance();
     private final RoleDtoMapper roleDtoMapper = RoleDtoMapperImpl.getInstance();
 
 

@@ -14,7 +14,7 @@ import org.example.servlet.mapper.impl.UserDtoMapperImpl;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
-    private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
+    private final UserRepository userRepository = UserRepositoryImpl.getInstance();
     private static final UserDtoMapper userDtoMapper = UserDtoMapperImpl.getInstance();
     private static UserService instance;
 
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
         return instance;
     }
 
-    private static void checkExistUser(Long userId) throws NotFoundException {
+    private void checkExistUser(Long userId) throws NotFoundException {
         if (!userRepository.exitsById(userId)) {
             throw new NotFoundException("User not found.");
         }

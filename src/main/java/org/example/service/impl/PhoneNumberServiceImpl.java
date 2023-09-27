@@ -14,7 +14,7 @@ import org.example.servlet.mapper.impl.PhoneNumberDtoMapperImpl;
 import java.util.List;
 
 public class PhoneNumberServiceImpl implements PhoneNumberService {
-    private static final PhoneNumberDtoMapper phoneNumberDtoMapper = PhoneNumberDtoMapperImpl.getInstance();
+    private final PhoneNumberDtoMapper phoneNumberDtoMapper = PhoneNumberDtoMapperImpl.getInstance();
     private static PhoneNumberService instance;
     private final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
 

@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/department/*"})
 public class DepartmentServlet extends HttpServlet {
-    private static final DepartmentService departmentService = DepartmentServiceImpl.getInstance();
+    private final transient DepartmentService departmentService = DepartmentServiceImpl.getInstance();
     private final ObjectMapper objectMapper;
 
     public DepartmentServlet() {

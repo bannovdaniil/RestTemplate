@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/user/*"})
 public class UserServlet extends HttpServlet {
-    private static final UserService userService = UserServiceImpl.getInstance();
+    private final transient UserService userService = UserServiceImpl.getInstance();
     private final ObjectMapper objectMapper;
 
     public UserServlet() {
