@@ -1,18 +1,21 @@
 package org.example.servlet;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.exception.NotFoundException;
 import org.example.service.RoleService;
 import org.example.service.impl.RoleServiceImpl;
+import org.example.servlet.dto.RoleIncomingDto;
+import org.example.servlet.dto.RoleUpdateDto;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -26,6 +29,9 @@ class RoleServletTest {
     private HttpServletRequest mockRequest;
     @Mock
     private HttpServletResponse mockResponse;
+    @Mock
+    private BufferedReader mockBufferedReader;
+
 
     private static RoleService mockRoleService;
     @InjectMocks
@@ -127,8 +133,34 @@ class RoleServletTest {
     }
 
     @Test
-    void doPost() {
+    void doPost() throws IOException {
+        String expectedName = "New role Admin";
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"name\":\"" + expectedName + "\"}",
+                null
+        ).when(mockBufferedReader).readLine();
 
+        roleServlet.doPost(mockRequest, mockResponse);
+
+        ArgumentCaptor<RoleIncomingDto> argumentCaptor = ArgumentCaptor.forClass(RoleIncomingDto.class);
+        Mockito.verify(mockRoleService).save(argumentCaptor.capture());
+
+        RoleIncomingDto result = argumentCaptor.getValue();
+        Assertions.assertEquals(expectedName, result.getName());
+    }
+
+    @Test
+    void doPostBadRequest() throws IOException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn(
+                "{\"id\":1}",
+                null
+        ).when(mockBufferedReader).readLine();
+
+        roleServlet.doPost(mockRequest, mockResponse);
+
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
