@@ -10,10 +10,8 @@ import org.example.servlet.dto.RoleUpdateDto;
 import org.example.servlet.dto.UserIncomingDto;
 import org.example.servlet.dto.UserOutGoingDto;
 import org.example.servlet.dto.UserUpdateDto;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -44,6 +42,13 @@ class UserServiceImplTest {
         userService = UserServiceImpl.getInstance();
     }
 
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = UserRepositoryImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
+
     @BeforeEach
     void setUp() {
         Mockito.reset(mockUserRepository);
@@ -54,7 +59,7 @@ class UserServiceImplTest {
         Long expectedId = 1L;
 
         UserIncomingDto dto = new UserIncomingDto("f1 name", "l1 name", role);
-        User user = new User(expectedId, "f1 name", "l1 name", role, null, null);
+        User user = new User(expectedId, "f1 name", "l1 name", role, List.of(), List.of());
 
         Mockito.doReturn(user).when(mockUserRepository).save(Mockito.any(User.class));
 
@@ -100,7 +105,7 @@ class UserServiceImplTest {
     void findById() throws NotFoundException {
         Long expectedId = 1L;
 
-        Optional<User> user = Optional.of(new User(expectedId, "f1 name", "l1 name", role, null, null));
+        Optional<User> user = Optional.of(new User(expectedId, "f1 name", "l1 name", role, List.of(), List.of()));
 
         Mockito.doReturn(true).when(mockUserRepository).exitsById(Mockito.any());
         Mockito.doReturn(user).when(mockUserRepository).findById(Mockito.anyLong());

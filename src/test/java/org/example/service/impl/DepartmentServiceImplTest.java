@@ -7,16 +7,14 @@ import org.example.repository.DepartmentRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserToDepartmentRepository;
 import org.example.repository.impl.DepartmentRepositoryImpl;
+import org.example.repository.impl.RoleRepositoryImpl;
 import org.example.repository.impl.UserRepositoryImpl;
 import org.example.repository.impl.UserToDepartmentRepositoryImpl;
 import org.example.service.DepartmentService;
 import org.example.servlet.dto.DepartmentIncomingDto;
 import org.example.servlet.dto.DepartmentOutGoingDto;
 import org.example.servlet.dto.DepartmentUpdateDto;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -70,6 +68,21 @@ class DepartmentServiceImplTest {
         setMock(mockUserToDepartmentRepository);
 
         departmentService = DepartmentServiceImpl.getInstance();
+    }
+
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = DepartmentRepositoryImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
+
+        instance = UserRepositoryImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
+
+        instance = UserToDepartmentRepositoryImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
     }
 
     @BeforeEach

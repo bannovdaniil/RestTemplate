@@ -5,15 +5,12 @@ import org.example.model.PhoneNumber;
 import org.example.model.Role;
 import org.example.repository.PhoneNumberRepository;
 import org.example.repository.impl.PhoneNumberRepositoryImpl;
+import org.example.repository.impl.RoleRepositoryImpl;
 import org.example.service.PhoneNumberService;
 import org.example.servlet.dto.PhoneNumberIncomingDto;
 import org.example.servlet.dto.PhoneNumberOutGoingDto;
 import org.example.servlet.dto.PhoneNumberUpdateDto;
-import org.example.servlet.dto.RoleOutGoingDto;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -39,6 +36,13 @@ class PhoneNumberServiceImplTest {
         mockePhoneNumberRepository = Mockito.mock(PhoneNumberRepository.class);
         setMock(mockePhoneNumberRepository);
         phoneNumberService = PhoneNumberServiceImpl.getInstance();
+    }
+
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = PhoneNumberRepositoryImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
     }
 
     @BeforeEach

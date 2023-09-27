@@ -8,10 +8,7 @@ import org.example.service.RoleService;
 import org.example.servlet.dto.RoleIncomingDto;
 import org.example.servlet.dto.RoleOutGoingDto;
 import org.example.servlet.dto.RoleUpdateDto;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -37,6 +34,13 @@ class RoleServiceImplTest {
         mockRoleRepository = Mockito.mock(RoleRepository.class);
         setMock(mockRoleRepository);
         roleService = RoleServiceImpl.getInstance();
+    }
+
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = RoleRepositoryImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
     }
 
     @BeforeEach
@@ -128,6 +132,8 @@ class RoleServiceImplTest {
     @Test
     void delete() throws NotFoundException {
         Long expectedId = 100L;
+
+        Mockito.doReturn(true).when(mockRoleRepository).exitsById(100L);
 
         roleService.delete(expectedId);
 

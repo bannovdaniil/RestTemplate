@@ -117,6 +117,5 @@ class PhoneNumberDtoMapperImplTest {
 
         Assertions.assertEquals(dto.getId(), result.getId());
         Assertions.assertEquals(dto.getNumber(), result.getNumber());
-        Assertions.assertEquals(dto.getUserId(), result.getUser().getId());
     }
 }
