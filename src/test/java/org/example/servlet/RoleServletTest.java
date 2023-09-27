@@ -93,7 +93,7 @@ class RoleServletTest {
     }
 
     @Test
-    void doGetBadRequest() throws IOException, NotFoundException {
+    void doGetBadRequest() throws IOException {
         Mockito.doReturn("role/2q").when(mockRequest).getPathInfo();
 
         roleServlet.doGet(mockRequest, mockResponse);
@@ -124,7 +124,7 @@ class RoleServletTest {
     }
 
     @Test
-    void doDeleteBadRequest() throws IOException, NotFoundException {
+    void doDeleteBadRequest() throws IOException {
         Mockito.doReturn("role/a100").when(mockRequest).getPathInfo();
 
         roleServlet.doDelete(mockRequest, mockResponse);
