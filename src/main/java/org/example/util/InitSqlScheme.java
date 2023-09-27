@@ -1,7 +1,7 @@
 package org.example.util;
 
 import org.example.db.ConnectionManager;
-import org.example.repository.exception.RepositoryException;
+import org.example.exception.RepositoryException;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;

@@ -2,9 +2,9 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.Role;
 import org.example.repository.RoleRepository;
-import org.example.repository.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,6 +12,34 @@ import java.util.List;
 import java.util.Optional;
 
 public class RoleRepositoryImpl implements RoleRepository {
+    private static final String SAVE_SQL = """
+            INSERT INTO roles (role_name)
+            VALUES (?) ;
+            """;
+    private static final String UPDATE_SQL = """
+            UPDATE roles
+            SET role_name = ?
+            WHERE role_id = ?  ;
+            """;
+    private static final String DELETE_SQL = """
+            DELETE FROM roles
+            WHERE role_id = ? ;
+            """;
+    private static final String FIND_BY_ID_SQL = """
+            SELECT role_id, role_name FROM roles
+            WHERE role_id = ?
+            LIMIT 1;
+            """;
+    private static final String FIND_ALL_SQL = """
+            SELECT role_id, role_name FROM roles ;
+            """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM roles
+                        WHERE role_id = ?
+                        LIMIT 1);
+            """;
     private static RoleRepository instance;
     private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
 
@@ -25,38 +53,12 @@ public class RoleRepositoryImpl implements RoleRepository {
         return instance;
     }
 
-    private static final String SAVE_SQL = """
-            INSERT INTO roles (role_name)
-            VALUES (?) ;
-            """;
-
-    private static final String UPDATE_SQL = """
-            UPDATE roles
-            SET role_name = ?
-            WHERE role_id = ?  ;
-            """;
-
-    private static final String DELETE_SQL = """
-            DELETE FROM roles
-            WHERE role_id = ? ;
-            """;
-
-    private static final String FIND_BY_ID_SQL = """
-            SELECT role_id, role_name FROM roles
-            WHERE role_id = ?
-            LIMIT 1;
-            """;
-
-    private static final String FIND_ALL_SQL = """
-            SELECT role_id, role_name FROM roles ;
-            """;
-    private static final String EXIST_BY_ID_SQL = """
-                SELECT exists (
-                SELECT 1
-                    FROM roles
-                        WHERE role_id = ?
-                        LIMIT 1);
-            """;
+    private static Role createRole(ResultSet resultSet) throws SQLException {
+        Role role;
+        role = new Role(resultSet.getLong("role_id"),
+                resultSet.getString("role_name"));
+        return role;
+    }
 
     @Override
     public Role save(Role role) {
@@ -69,7 +71,9 @@ public class RoleRepositoryImpl implements RoleRepository {
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                role.setId(resultSet.getLong("role_id"));
+                role = new Role(
+                        resultSet.getLong("role_id"),
+                        role.getName());
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);
@@ -124,13 +128,6 @@ public class RoleRepositoryImpl implements RoleRepository {
             throw new RepositoryException(e);
         }
         return Optional.ofNullable(role);
-    }
-
-    private static Role createRole(ResultSet resultSet) throws SQLException {
-        Role role;
-        role = new Role(resultSet.getLong("role_id"),
-                resultSet.getString("role_name"));
-        return role;
     }
 
     @Override

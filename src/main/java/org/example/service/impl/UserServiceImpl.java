@@ -1,8 +1,8 @@
 package org.example.service.impl;
 
+import org.example.exception.NotFoundException;
 import org.example.model.User;
 import org.example.repository.UserRepository;
-import org.example.repository.exception.NotFoundException;
 import org.example.repository.impl.UserRepositoryImpl;
 import org.example.service.UserService;
 import org.example.servlet.dto.UserIncomingDto;
@@ -14,7 +14,7 @@ import org.example.servlet.mapper.impl.UserDtoMapperImpl;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
-    private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
+    private final UserRepository userRepository = UserRepositoryImpl.getInstance();
     private static final UserDtoMapper userDtoMapper = UserDtoMapperImpl.getInstance();
     private static UserService instance;
 
@@ -27,6 +27,12 @@ public class UserServiceImpl implements UserService {
             instance = new UserServiceImpl();
         }
         return instance;
+    }
+
+    private void checkExistUser(Long userId) throws NotFoundException {
+        if (!userRepository.exitsById(userId)) {
+            throw new NotFoundException("User not found.");
+        }
     }
 
     @Override
@@ -61,11 +67,5 @@ public class UserServiceImpl implements UserService {
     public void delete(Long userId) throws NotFoundException {
         checkExistUser(userId);
         userRepository.deleteById(userId);
-    }
-
-    private static void checkExistUser(Long userId) throws NotFoundException {
-        if (!userRepository.exitsById(userId)) {
-            throw new NotFoundException("User not found.");
-        }
     }
 }

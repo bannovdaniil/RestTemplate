@@ -10,11 +10,10 @@ import org.example.repository.impl.UserRepositoryImpl;
  * One To One: PhoneNumber - User
  */
 public class PhoneNumber {
+    private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
     private Long id;
     private String number;
     private User user;
-
-    private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
 
     public PhoneNumber() {
     }
@@ -27,10 +26,6 @@ public class PhoneNumber {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNumber() {

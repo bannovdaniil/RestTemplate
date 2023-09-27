@@ -2,13 +2,13 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.Department;
 import org.example.model.User;
 import org.example.model.UserToDepartment;
 import org.example.repository.DepartmentRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserToDepartmentRepository;
-import org.example.repository.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,11 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepository {
-    private static UserToDepartmentRepository instance;
     private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
     private static final DepartmentRepository departmentRepository = DepartmentRepositoryImpl.getInstance();
     private static final UserRepository userRepository = UserRepositoryImpl.getInstance();
-
     private static final String SAVE_SQL = """
             INSERT INTO users_departments (user_id, department_id)
             VALUES (?, ?);
@@ -71,6 +69,7 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
                         WHERE users_departments_id = ?
                         LIMIT 1);
             """;
+    private static UserToDepartmentRepository instance;
 
     private UserToDepartmentRepositoryImpl() {
     }
@@ -80,6 +79,16 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
             instance = new UserToDepartmentRepositoryImpl();
         }
         return instance;
+    }
+
+    private static UserToDepartment createUserToDepartament(ResultSet resultSet) throws SQLException {
+        UserToDepartment userToDepartment;
+        userToDepartment = new UserToDepartment(
+                resultSet.getLong("users_departments_id"),
+                resultSet.getLong("user_id"),
+                resultSet.getLong("department_id")
+        );
+        return userToDepartment;
     }
 
     @Override
@@ -94,7 +103,11 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                userToDepartment.setId(resultSet.getLong("users_departments_id"));
+                userToDepartment = new UserToDepartment(
+                        resultSet.getLong("users_departments_id"),
+                        userToDepartment.getUserId(),
+                        userToDepartment.getDepartmentId()
+                );
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);
@@ -165,7 +178,6 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
 
         return deleteResult;
     }
-
 
     @Override
     public Optional<UserToDepartment> findById(Long id) {
@@ -307,16 +319,6 @@ public class UserToDepartmentRepositoryImpl implements UserToDepartmentRepositor
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
-        return userToDepartment;
-    }
-
-    private static UserToDepartment createUserToDepartament(ResultSet resultSet) throws SQLException {
-        UserToDepartment userToDepartment;
-        userToDepartment = new UserToDepartment(
-                resultSet.getLong("users_departments_id"),
-                resultSet.getLong("user_id"),
-                resultSet.getLong("department_id")
-        );
         return userToDepartment;
     }
 

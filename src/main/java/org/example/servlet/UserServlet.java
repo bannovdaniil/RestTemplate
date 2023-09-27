@@ -1,12 +1,11 @@
 package org.example.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.repository.exception.NotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.service.UserService;
 import org.example.service.impl.UserServiceImpl;
 import org.example.servlet.dto.UserIncomingDto;
@@ -22,11 +21,26 @@ import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/user/*"})
 public class UserServlet extends HttpServlet {
-    private static final UserService userService = UserServiceImpl.getInstance();
+    private final transient UserService userService = UserServiceImpl.getInstance();
     private final ObjectMapper objectMapper;
 
     public UserServlet() {
         this.objectMapper = new ObjectMapper();
+    }
+
+    private static void setJsonHeader(HttpServletResponse resp) {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+    }
+
+    private static String getJson(HttpServletRequest req) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader postData = req.getReader();
+        String line;
+        while ((line = postData.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
     }
 
     @Override
@@ -65,7 +79,7 @@ public class UserServlet extends HttpServlet {
         try {
             String[] pathPart = req.getPathInfo().split("/");
             Long userId = Long.parseLong(pathPart[1]);
-            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             userService.delete(userId);
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -80,7 +94,7 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
         String json = getJson(req);
 
@@ -100,7 +114,7 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
         String json = getJson(req);
 
@@ -120,20 +134,5 @@ public class UserServlet extends HttpServlet {
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
         printWriter.flush();
-    }
-
-    private static void setJsonHeader(HttpServletResponse resp) {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-    }
-
-    private static String getJson(HttpServletRequest req) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader postData = req.getReader();
-        String line;
-        while ((line = postData.readLine()) != null) {
-            sb.append(line);
-        }
-        return sb.toString();
     }
 }

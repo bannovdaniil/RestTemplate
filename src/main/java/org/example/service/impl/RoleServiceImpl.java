@@ -1,8 +1,8 @@
 package org.example.service.impl;
 
+import org.example.exception.NotFoundException;
 import org.example.model.Role;
 import org.example.repository.RoleRepository;
-import org.example.repository.exception.NotFoundException;
 import org.example.repository.impl.RoleRepositoryImpl;
 import org.example.service.RoleService;
 import org.example.servlet.dto.RoleIncomingDto;
@@ -14,9 +14,9 @@ import org.example.servlet.mapper.impl.RoleDtoMapperImpl;
 import java.util.List;
 
 public class RoleServiceImpl implements RoleService {
-    private final RoleRepository roleRepository = RoleRepositoryImpl.getInstance();
-    private final RoleDtoMapper roleDtoMapper = RoleDtoMapperImpl.getInstance();
+    private RoleRepository roleRepository = RoleRepositoryImpl.getInstance();
     private static RoleService instance;
+    private final RoleDtoMapper roleDtoMapper = RoleDtoMapperImpl.getInstance();
 
 
     private RoleServiceImpl() {
@@ -38,12 +38,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void update(RoleUpdateDto roleUpdateDto) throws NotFoundException {
-        if (roleRepository.exitsById(roleUpdateDto.getId())) {
-            Role role = roleDtoMapper.map(roleUpdateDto);
-            roleRepository.update(role);
-        } else {
-            throw new NotFoundException("Role not found.");
-        }
+        checkRoleExist(roleUpdateDto.getId());
+        Role role = roleDtoMapper.map(roleUpdateDto);
+        roleRepository.update(role);
     }
 
     @Override
@@ -60,8 +57,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public boolean delete(Long roleId) {
+    public boolean delete(Long roleId) throws NotFoundException {
+        checkRoleExist(roleId);
         return roleRepository.deleteById(roleId);
     }
 
+    private void checkRoleExist(Long roleId) throws NotFoundException {
+        if (!roleRepository.exitsById(roleId)) {
+            throw new NotFoundException("Role not found.");
+        }
+    }
 }

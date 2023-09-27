@@ -2,10 +2,10 @@ package org.example.repository.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.db.ConnectionManagerImpl;
+import org.example.exception.RepositoryException;
 import org.example.model.PhoneNumber;
 import org.example.model.User;
 import org.example.repository.PhoneNumberRepository;
-import org.example.repository.exception.RepositoryException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,9 +13,58 @@ import java.util.List;
 import java.util.Optional;
 
 public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
-    private static PhoneNumberRepository instance;
     private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
-
+    private static final String SAVE_SQL = """
+            INSERT INTO phone_numbers (phonenumber_number, user_id)
+            VALUES (?, ?);
+            """;
+    private static final String UPDATE_SQL = """
+            UPDATE phone_numbers
+            SET phonenumber_number = ?,
+                user_id = ?
+            WHERE phonenumber_id = ?;
+            """;
+    private static final String DELETE_SQL = """
+            DELETE FROM phone_numbers
+            WHERE phonenumber_id = ?;
+            """;
+    private static final String FIND_BY_ID_SQL = """
+            SELECT phonenumber_id, phonenumber_number, user_id FROM phone_numbers
+            WHERE phonenumber_id = ?
+            LIMIT 1;
+            """;
+    private static final String FIND_BY_NUMBER_SQL = """
+            SELECT phonenumber_id, phonenumber_number, user_id FROM phone_numbers
+            WHERE phonenumber_number = ?
+            LIMIT 1;
+            """;
+    private static final String EXIST_BY_NUMBER_SQL = """
+            SELECT exists (
+                SELECT 1
+                    FROM phone_numbers
+                        WHERE phonenumber_number = LOWER(?)
+                        LIMIT 1
+            );
+            """;
+    private static final String FIND_ALL_BY_USERID_SQL = """
+            SELECT phonenumber_id, phonenumber_number, user_id FROM phone_numbers
+            WHERE user_id = ?;
+            """;
+    private static final String DELETE_ALL_BY_USERID_SQL = """
+            DELETE FROM phone_numbers
+            WHERE user_id = ?;
+            """;
+    private static final String FIND_ALL_SQL = """
+            SELECT phonenumber_id, phonenumber_number, user_id FROM phone_numbers;
+            """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM phone_numbers
+                        WHERE phonenumber_id = ?
+                        LIMIT 1);
+            """;
+    private static PhoneNumberRepository instance;
     private PhoneNumberRepositoryImpl() {
     }
 
@@ -26,59 +75,22 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
         return instance;
     }
 
-    private static final String SAVE_SQL = """
-            INSERT INTO phonenumbers (phonenumber_number, user_id)
-            VALUES (?, ?);
-            """;
-
-    private static final String UPDATE_SQL = """
-            UPDATE phonenumbers
-            SET phonenumber_number = ?,
-                user_id = ?
-            WHERE phonenumber_id = ?;
-            """;
-
-    private static final String DELETE_SQL = """
-            DELETE FROM phonenumbers
-            WHERE phonenumber_id = ?;
-            """;
-    private static final String FIND_BY_ID_SQL = """
-            SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers
-            WHERE phonenumber_id = ?
-            LIMIT 1;
-            """;
-    private static final String FIND_BY_NUMBER_SQL = """
-            SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers
-            WHERE phonenumber_number = ?
-            LIMIT 1;
-            """;
-    private static final String EXIST_BY_NUMBER_SQL = """
-            SELECT exists (
-                SELECT 1 
-                    FROM phonenumbers
-                        WHERE phonenumber_number = LOWER(?)
-                        LIMIT 1
-            );
-            """;
-    private static final String FIND_ALL_BY_USERID_SQL = """
-            SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers
-            WHERE user_id = ?;
-            """;
-    private static final String DELETE_ALL_BY_USERID_SQL = """
-            DELETE FROM phonenumbers
-            WHERE user_id = ?;
-            """;
-    private static final String FIND_ALL_SQL = """
-            SELECT phonenumber_id, phonenumber_number, user_id FROM phonenumbers;
-            """;
-    private static final String EXIST_BY_ID_SQL = """
-                SELECT exists (
-                SELECT 1
-                    FROM phonenumbers
-                        WHERE phonenumber_id = ?
-                        LIMIT 1);
-            """;
-
+    private static PhoneNumber createPhoneNumber(ResultSet resultSet) throws SQLException {
+        PhoneNumber phoneNumber;
+        User user = new User(
+                resultSet.getLong("user_id"),
+                null,
+                null,
+                null,
+                List.of(),
+                List.of()
+        );
+        phoneNumber = new PhoneNumber(
+                resultSet.getLong("phonenumber_id"),
+                resultSet.getString("phonenumber_number"),
+                user);
+        return phoneNumber;
+    }
 
     @Override
     public PhoneNumber save(PhoneNumber phoneNumber) {
@@ -95,7 +107,12 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                phoneNumber.setId(resultSet.getLong("phonenumber_id"));
+
+                phoneNumber = new PhoneNumber(
+                        resultSet.getLong("phonenumber_id"),
+                        phoneNumber.getNumber(),
+                        phoneNumber.getUser()
+                );
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);
@@ -207,23 +224,6 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             throw new RepositoryException(e);
         }
         return Optional.ofNullable(phoneNumber);
-    }
-
-    private static PhoneNumber createPhoneNumber(ResultSet resultSet) throws SQLException {
-        PhoneNumber phoneNumber;
-        User user = new User(
-                resultSet.getLong("user_id"),
-                null,
-                null,
-                null,
-                List.of(),
-                List.of()
-        );
-        phoneNumber = new PhoneNumber(
-                resultSet.getLong("phonenumber_id"),
-                resultSet.getString("phonenumber_number"),
-                user);
-        return phoneNumber;
     }
 
     @Override

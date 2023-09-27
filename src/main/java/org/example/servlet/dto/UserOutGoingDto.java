@@ -27,47 +27,25 @@ public class UserOutGoingDto {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public RoleOutGoingDto getRole() {
         return role;
     }
 
-    public void setRole(RoleOutGoingDto role) {
-        this.role = role;
-    }
 
     public List<PhoneNumberOutGoingDto> getPhoneNumberList() {
         return phoneNumberList;
-    }
-
-    public void setPhoneNumberList(List<PhoneNumberOutGoingDto> phoneNumberList) {
-        this.phoneNumberList = phoneNumberList;
     }
 
     public List<DepartmentOutGoingDto> getDepartmentList() {
         return departmentList;
     }
 
-    public void setDepartmentList(List<DepartmentOutGoingDto> departmentList) {
-        this.departmentList = departmentList;
-    }
 }
