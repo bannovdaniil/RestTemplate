@@ -25,6 +25,10 @@ import java.lang.reflect.Field;
         MockitoExtension.class
 )
 class RoleServletTest {
+    private static RoleService mockRoleService;
+    @InjectMocks
+    private static RoleServlet roleServlet;
+    private static RoleServiceImpl oldInstance;
     @Mock
     private HttpServletRequest mockRequest;
     @Mock
@@ -32,15 +36,11 @@ class RoleServletTest {
     @Mock
     private BufferedReader mockBufferedReader;
 
-
-    private static RoleService mockRoleService;
-    @InjectMocks
-    private static RoleServlet roleServlet;
-
     private static void setMock(RoleService mock) {
         try {
             Field instance = RoleServiceImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldInstance = (RoleServiceImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -54,6 +54,13 @@ class RoleServletTest {
         roleServlet = new RoleServlet();
     }
 
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = RoleServiceImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(instance, oldInstance);
+    }
+
     @BeforeEach
     void setUp() throws IOException {
         Mockito.doReturn(new PrintWriter(Writer.nullWriter())).when(mockResponse).getWriter();
@@ -62,13 +69,6 @@ class RoleServletTest {
     @AfterEach
     void tearDown() {
         Mockito.reset(mockRoleService);
-    }
-
-    @AfterAll
-    static void afterAll() throws Exception {
-        Field instance = RoleServiceImpl.class.getDeclaredField("instance");
-        instance.setAccessible(true);
-        instance.set(null, null);
     }
 
     @Test

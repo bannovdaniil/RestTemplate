@@ -25,6 +25,10 @@ import java.lang.reflect.Field;
         MockitoExtension.class
 )
 class DepartmentServletTest {
+    private static DepartmentService mockDepartmentService;
+    @InjectMocks
+    private static DepartmentServlet departmentServlet;
+    private static DepartmentServiceImpl oldInstance;
     @Mock
     private HttpServletRequest mockRequest;
     @Mock
@@ -32,15 +36,11 @@ class DepartmentServletTest {
     @Mock
     private BufferedReader mockBufferedReader;
 
-
-    private static DepartmentService mockDepartmentService;
-    @InjectMocks
-    private static DepartmentServlet departmentServlet;
-
     private static void setMock(DepartmentService mock) {
         try {
             Field instance = DepartmentServiceImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldInstance = (DepartmentServiceImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -54,6 +54,13 @@ class DepartmentServletTest {
         departmentServlet = new DepartmentServlet();
     }
 
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = DepartmentServiceImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(instance, oldInstance);
+    }
+
     @BeforeEach
     void setUp() throws IOException {
         Mockito.doReturn(new PrintWriter(Writer.nullWriter())).when(mockResponse).getWriter();
@@ -62,13 +69,6 @@ class DepartmentServletTest {
     @AfterEach
     void tearDown() {
         Mockito.reset(mockDepartmentService);
-    }
-
-    @AfterAll
-    static void afterAll() throws Exception {
-        Field instance = DepartmentServiceImpl.class.getDeclaredField("instance");
-        instance.setAccessible(true);
-        instance.set(null, null);
     }
 
     @Test

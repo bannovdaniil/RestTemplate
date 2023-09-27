@@ -5,7 +5,6 @@ import org.example.model.PhoneNumber;
 import org.example.model.Role;
 import org.example.repository.PhoneNumberRepository;
 import org.example.repository.impl.PhoneNumberRepositoryImpl;
-import org.example.repository.impl.RoleRepositoryImpl;
 import org.example.service.PhoneNumberService;
 import org.example.servlet.dto.PhoneNumberIncomingDto;
 import org.example.servlet.dto.PhoneNumberOutGoingDto;
@@ -20,11 +19,13 @@ import java.util.Optional;
 class PhoneNumberServiceImplTest {
     private static PhoneNumberService phoneNumberService;
     private static PhoneNumberRepository mockePhoneNumberRepository;
+    private static PhoneNumberRepositoryImpl oldInstance;
 
     private static void setMock(PhoneNumberRepository mock) {
         try {
             Field instance = PhoneNumberRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldInstance = (PhoneNumberRepositoryImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -42,7 +43,7 @@ class PhoneNumberServiceImplTest {
     static void afterAll() throws Exception {
         Field instance = PhoneNumberRepositoryImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
-        instance.set(null, null);
+        instance.set(instance, oldInstance);
     }
 
     @BeforeEach

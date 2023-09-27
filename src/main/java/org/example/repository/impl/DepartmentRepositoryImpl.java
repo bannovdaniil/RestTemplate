@@ -12,6 +12,34 @@ import java.util.List;
 import java.util.Optional;
 
 public class DepartmentRepositoryImpl implements DepartmentRepository {
+    private static final String SAVE_SQL = """
+            INSERT INTO departments (department_name)
+            VALUES (?);
+            """;
+    private static final String UPDATE_SQL = """
+            UPDATE departments
+            SET department_name = ?
+            WHERE department_id = ?;
+            """;
+    private static final String DELETE_SQL = """
+            DELETE FROM departments
+            WHERE department_id = ?;
+            """;
+    private static final String FIND_BY_ID_SQL = """
+            SELECT department_id, department_name FROM departments
+            WHERE department_id = ?
+            LIMIT 1;
+            """;
+    private static final String FIND_ALL_SQL = """
+            SELECT department_id, department_name FROM departments;
+            """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM departments
+                        WHERE department_id = ?
+                        LIMIT 1);
+            """;
     private static DepartmentRepository instance;
     private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
 
@@ -25,39 +53,14 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
         return instance;
     }
 
-    private static final String SAVE_SQL = """
-            INSERT INTO departments (department_name)
-            VALUES (?);
-            """;
-
-    private static final String UPDATE_SQL = """
-            UPDATE departments
-            SET department_name = ?
-            WHERE department_id = ?;
-            """;
-
-    private static final String DELETE_SQL = """
-            DELETE FROM departments
-            WHERE department_id = ?;
-            """;
-
-    private static final String FIND_BY_ID_SQL = """
-            SELECT department_id, department_name FROM departments
-            WHERE department_id = ?
-            LIMIT 1;
-            """;
-
-    private static final String FIND_ALL_SQL = """
-            SELECT department_id, department_name FROM departments;
-            """;
-
-    private static final String EXIST_BY_ID_SQL = """
-                SELECT exists (
-                SELECT 1
-                    FROM departments
-                        WHERE department_id = ?
-                        LIMIT 1);
-            """;
+    private static Department createDepartment(ResultSet resultSet) throws SQLException {
+        Department department;
+        department = new Department(
+                resultSet.getLong("department_id"),
+                resultSet.getString("department_name"),
+                null);
+        return department;
+    }
 
     @Override
     public Department save(Department department) {
@@ -130,15 +133,6 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
             throw new RepositoryException(e);
         }
         return Optional.ofNullable(department);
-    }
-
-    private static Department createDepartment(ResultSet resultSet) throws SQLException {
-        Department department;
-        department = new Department(
-                resultSet.getLong("department_id"),
-                resultSet.getString("department_name"),
-                null);
-        return department;
     }
 
     @Override

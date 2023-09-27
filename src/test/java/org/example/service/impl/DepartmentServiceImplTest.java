@@ -7,7 +7,6 @@ import org.example.repository.DepartmentRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserToDepartmentRepository;
 import org.example.repository.impl.DepartmentRepositoryImpl;
-import org.example.repository.impl.RoleRepositoryImpl;
 import org.example.repository.impl.UserRepositoryImpl;
 import org.example.repository.impl.UserToDepartmentRepositoryImpl;
 import org.example.service.DepartmentService;
@@ -27,11 +26,15 @@ class DepartmentServiceImplTest {
     private static DepartmentRepository mockDepartmentRepository;
     private static UserRepository mockUserRepository;
     private static UserToDepartmentRepository mockUserToDepartmentRepository;
+    private static DepartmentRepositoryImpl oldDepartmentInstance;
+    private static UserRepositoryImpl oldUserInstance;
+    private static UserToDepartmentRepositoryImpl oldLinkInstance;
 
     private static void setMock(DepartmentRepository mock) {
         try {
             Field instance = DepartmentRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldDepartmentInstance = (DepartmentRepositoryImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -42,6 +45,7 @@ class DepartmentServiceImplTest {
         try {
             Field instance = UserRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldUserInstance = (UserRepositoryImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -52,6 +56,7 @@ class DepartmentServiceImplTest {
         try {
             Field instance = UserToDepartmentRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldLinkInstance = (UserToDepartmentRepositoryImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -74,15 +79,15 @@ class DepartmentServiceImplTest {
     static void afterAll() throws Exception {
         Field instance = DepartmentRepositoryImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
-        instance.set(null, null);
+        instance.set(instance, oldDepartmentInstance);
 
         instance = UserRepositoryImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
-        instance.set(null, null);
+        instance.set(instance, oldUserInstance);
 
         instance = UserToDepartmentRepositoryImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
-        instance.set(null, null);
+        instance.set(instance, oldLinkInstance);
     }
 
     @BeforeEach
@@ -218,6 +223,5 @@ class DepartmentServiceImplTest {
 
         Assertions.assertEquals(expectedUserId, result.getUserId());
         Assertions.assertEquals(expectedDepartmentId, result.getDepartmentId());
-
     }
 }

@@ -16,11 +16,6 @@ class RoleDtoMapperImplTest {
     private static RoleOutGoingDto roleOutGoingDto;
     private RoleDtoMapper roleDtoMapper;
 
-    @BeforeEach
-    void setUp() {
-        roleDtoMapper = RoleDtoMapperImpl.getInstance();
-    }
-
     @BeforeAll
     static void beforeAll() {
         role = new Role(
@@ -36,6 +31,11 @@ class RoleDtoMapperImplTest {
                 100L,
                 "Update dto"
         );
+    }
+
+    @BeforeEach
+    void setUp() {
+        roleDtoMapper = RoleDtoMapperImpl.getInstance();
     }
 
     @DisplayName("Role map(RoleIncomingDto")

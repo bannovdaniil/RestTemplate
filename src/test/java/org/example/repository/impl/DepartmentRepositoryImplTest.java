@@ -23,10 +23,9 @@ import java.util.Optional;
 @Tag("DockerRequired")
 class DepartmentRepositoryImplTest {
     private static final String INIT_SQL = "sql/schema.sql";
+    public static DepartmentRepository departmentRepository;
     private static int containerPort = 5432;
     private static int localPort = 5432;
-    private static JdbcDatabaseDelegate jdbcDatabaseDelegate;
-
     @Container
     public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:15-alpine")
             .withDatabaseName("users_db")
@@ -37,8 +36,7 @@ class DepartmentRepositoryImplTest {
                     new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(localPort), new ExposedPort(containerPort)))
             ))
             .withInitScript(INIT_SQL);
-
-    public static DepartmentRepository departmentRepository;
+    private static JdbcDatabaseDelegate jdbcDatabaseDelegate;
 
     @BeforeAll
     static void beforeAll() {
@@ -47,14 +45,14 @@ class DepartmentRepositoryImplTest {
         jdbcDatabaseDelegate = new JdbcDatabaseDelegate(container, "");
     }
 
-    @BeforeEach
-    void setUp() {
-        ScriptUtils.runInitScript(jdbcDatabaseDelegate, INIT_SQL);
-    }
-
     @AfterAll
     static void afterAll() {
         container.stop();
+    }
+
+    @BeforeEach
+    void setUp() {
+        ScriptUtils.runInitScript(jdbcDatabaseDelegate, INIT_SQL);
     }
 
     @Test

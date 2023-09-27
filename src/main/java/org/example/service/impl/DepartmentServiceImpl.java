@@ -1,11 +1,11 @@
 package org.example.service.impl;
 
+import org.example.exception.NotFoundException;
 import org.example.model.Department;
 import org.example.model.UserToDepartment;
 import org.example.repository.DepartmentRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserToDepartmentRepository;
-import org.example.exception.NotFoundException;
 import org.example.repository.impl.DepartmentRepositoryImpl;
 import org.example.repository.impl.UserRepositoryImpl;
 import org.example.repository.impl.UserToDepartmentRepositoryImpl;
@@ -34,6 +34,12 @@ public class DepartmentServiceImpl implements DepartmentService {
             instance = new DepartmentServiceImpl();
         }
         return instance;
+    }
+
+    private static void chekExistDepartment(Long departmentId) throws NotFoundException {
+        if (!departmentRepository.exitsById(departmentId)) {
+            throw new NotFoundException("Department not found.");
+        }
     }
 
     @Override
@@ -67,12 +73,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     public void delete(Long departmentId) throws NotFoundException {
         chekExistDepartment(departmentId);
         departmentRepository.deleteById(departmentId);
-    }
-
-    private static void chekExistDepartment(Long departmentId) throws NotFoundException {
-        if (!departmentRepository.exitsById(departmentId)) {
-            throw new NotFoundException("Department not found.");
-        }
     }
 
     @Override

@@ -13,6 +13,36 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
+    private static final String SAVE_SQL = """
+            INSERT INTO users (user_firstname, user_lastname, role_id)
+            VALUES (?, ? ,?) ;
+            """;
+    private static final String UPDATE_SQL = """
+            UPDATE users
+            SET user_firstname = ?,
+                user_lastname = ?,
+                role_id =?
+            WHERE user_id = ?  ;
+            """;
+    private static final String DELETE_SQL = """
+            DELETE FROM users
+            WHERE user_id = ? ;
+            """;
+    private static final String FIND_BY_ID_SQL = """
+            SELECT user_id, user_firstname, user_lastname, role_id FROM users
+            WHERE user_id = ?
+            LIMIT 1;
+            """;
+    private static final String FIND_ALL_SQL = """
+            SELECT user_id, user_firstname, user_lastname, role_id FROM users;
+            """;
+    private static final String EXIST_BY_ID_SQL = """
+                SELECT exists (
+                SELECT 1
+                    FROM users
+                        WHERE user_id = ?
+                        LIMIT 1);
+            """;
     private static UserRepository instance;
     private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
     private final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
@@ -29,41 +59,6 @@ public class UserRepositoryImpl implements UserRepository {
         }
         return instance;
     }
-
-    private static final String SAVE_SQL = """
-            INSERT INTO users (user_firstname, user_lastname, role_id)
-            VALUES (?, ? ,?) ;
-            """;
-
-    private static final String UPDATE_SQL = """
-            UPDATE users
-            SET user_firstname = ?,
-                user_lastname = ?,
-                role_id =?
-            WHERE user_id = ?  ;
-            """;
-
-    private static final String DELETE_SQL = """
-            DELETE FROM users
-            WHERE user_id = ? ;
-            """;
-
-    private static final String FIND_BY_ID_SQL = """
-            SELECT user_id, user_firstname, user_lastname, role_id FROM users
-            WHERE user_id = ?
-            LIMIT 1;
-            """;
-
-    private static final String FIND_ALL_SQL = """
-            SELECT user_id, user_firstname, user_lastname, role_id FROM users;
-            """;
-    private static final String EXIST_BY_ID_SQL = """
-                SELECT exists (
-                SELECT 1
-                    FROM users
-                        WHERE user_id = ?
-                        LIMIT 1);
-            """;
 
     /**
      * Сохранят в базу сущность пользователя,

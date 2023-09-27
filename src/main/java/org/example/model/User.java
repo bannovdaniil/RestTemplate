@@ -16,15 +16,14 @@ import java.util.List;
  * Many To One: User -> Role
  */
 public class User {
+    private static final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
+    private static final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
     private Long id;
     private String firstName;
     private String lastName;
     private Role role;
     private List<PhoneNumber> phoneNumberList;
     private List<Department> departmentList;
-
-    private static final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
-    private static final UserToDepartmentRepository userToDepartmentRepository = UserToDepartmentRepositoryImpl.getInstance();
 
     public User() {
     }

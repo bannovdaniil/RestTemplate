@@ -25,7 +25,7 @@ public final class ConnectionManagerImpl implements ConnectionManager {
         return instance;
     }
 
-    private static void loadDriver(String driverClass)  {
+    private static void loadDriver(String driverClass) {
         try {
             Class.forName(driverClass);
         } catch (ClassNotFoundException e) {

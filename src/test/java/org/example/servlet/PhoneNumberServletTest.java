@@ -25,6 +25,10 @@ import java.lang.reflect.Field;
         MockitoExtension.class
 )
 class PhoneNumberServletTest {
+    private static PhoneNumberService mockPhoneNumberService;
+    @InjectMocks
+    private static PhoneNumberServlet phoneNumberServlet;
+    private static PhoneNumberServiceImpl oldInstance;
     @Mock
     private HttpServletRequest mockRequest;
     @Mock
@@ -32,15 +36,11 @@ class PhoneNumberServletTest {
     @Mock
     private BufferedReader mockBufferedReader;
 
-
-    private static PhoneNumberService mockPhoneNumberService;
-    @InjectMocks
-    private static PhoneNumberServlet phoneNumberServlet;
-
     private static void setMock(PhoneNumberService mock) {
         try {
             Field instance = PhoneNumberServiceImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldInstance = (PhoneNumberServiceImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -54,6 +54,13 @@ class PhoneNumberServletTest {
         phoneNumberServlet = new PhoneNumberServlet();
     }
 
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = PhoneNumberServiceImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(instance, oldInstance);
+    }
+
     @BeforeEach
     void setUp() throws IOException {
         Mockito.doReturn(new PrintWriter(Writer.nullWriter())).when(mockResponse).getWriter();
@@ -62,13 +69,6 @@ class PhoneNumberServletTest {
     @AfterEach
     void tearDown() {
         Mockito.reset(mockPhoneNumberService);
-    }
-
-    @AfterAll
-    static void afterAll() throws Exception {
-        Field instance = PhoneNumberServiceImpl.class.getDeclaredField("instance");
-        instance.setAccessible(true);
-        instance.set(null, null);
     }
 
     @Test

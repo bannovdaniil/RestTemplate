@@ -13,31 +13,17 @@ import java.util.List;
 import java.util.Optional;
 
 public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
-    private static PhoneNumberRepository instance;
     private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
-
-    private PhoneNumberRepositoryImpl() {
-    }
-
-    public static synchronized PhoneNumberRepository getInstance() {
-        if (instance == null) {
-            instance = new PhoneNumberRepositoryImpl();
-        }
-        return instance;
-    }
-
     private static final String SAVE_SQL = """
             INSERT INTO phone_numbers (phonenumber_number, user_id)
             VALUES (?, ?);
             """;
-
     private static final String UPDATE_SQL = """
             UPDATE phone_numbers
             SET phonenumber_number = ?,
                 user_id = ?
             WHERE phonenumber_id = ?;
             """;
-
     private static final String DELETE_SQL = """
             DELETE FROM phone_numbers
             WHERE phonenumber_id = ?;
@@ -78,7 +64,33 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
                         WHERE phonenumber_id = ?
                         LIMIT 1);
             """;
+    private static PhoneNumberRepository instance;
+    private PhoneNumberRepositoryImpl() {
+    }
 
+    public static synchronized PhoneNumberRepository getInstance() {
+        if (instance == null) {
+            instance = new PhoneNumberRepositoryImpl();
+        }
+        return instance;
+    }
+
+    private static PhoneNumber createPhoneNumber(ResultSet resultSet) throws SQLException {
+        PhoneNumber phoneNumber;
+        User user = new User(
+                resultSet.getLong("user_id"),
+                null,
+                null,
+                null,
+                List.of(),
+                List.of()
+        );
+        phoneNumber = new PhoneNumber(
+                resultSet.getLong("phonenumber_id"),
+                resultSet.getString("phonenumber_number"),
+                user);
+        return phoneNumber;
+    }
 
     @Override
     public PhoneNumber save(PhoneNumber phoneNumber) {
@@ -212,23 +224,6 @@ public class PhoneNumberRepositoryImpl implements PhoneNumberRepository {
             throw new RepositoryException(e);
         }
         return Optional.ofNullable(phoneNumber);
-    }
-
-    private static PhoneNumber createPhoneNumber(ResultSet resultSet) throws SQLException {
-        PhoneNumber phoneNumber;
-        User user = new User(
-                resultSet.getLong("user_id"),
-                null,
-                null,
-                null,
-                List.of(),
-                List.of()
-        );
-        phoneNumber = new PhoneNumber(
-                resultSet.getLong("phonenumber_id"),
-                resultSet.getString("phonenumber_number"),
-                user);
-        return phoneNumber;
     }
 
     @Override

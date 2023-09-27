@@ -10,7 +10,6 @@ import org.example.servlet.dto.RoleUpdateDto;
 import org.example.servlet.dto.UserIncomingDto;
 import org.example.servlet.dto.UserOutGoingDto;
 import org.example.servlet.dto.UserUpdateDto;
-import org.junit.After;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -23,11 +22,13 @@ class UserServiceImplTest {
     private static UserService userService;
     private static UserRepository mockUserRepository;
     private static Role role;
+    private static UserRepositoryImpl oldInstance;
 
     private static void setMock(UserRepository mock) {
         try {
             Field instance = UserRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldInstance = (UserRepositoryImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -46,7 +47,7 @@ class UserServiceImplTest {
     static void afterAll() throws Exception {
         Field instance = UserRepositoryImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
-        instance.set(null, null);
+        instance.set(instance, oldInstance);
     }
 
     @BeforeEach

@@ -28,6 +28,21 @@ public class DepartmentServlet extends HttpServlet {
         this.objectMapper = new ObjectMapper();
     }
 
+    private static void setJsonHeader(HttpServletResponse resp) {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+    }
+
+    private static String getJson(HttpServletRequest req) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader postData = req.getReader();
+        String line;
+        while ((line = postData.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
@@ -136,20 +151,5 @@ public class DepartmentServlet extends HttpServlet {
         PrintWriter printWriter = resp.getWriter();
         printWriter.write(responseAnswer);
         printWriter.flush();
-    }
-
-    private static void setJsonHeader(HttpServletResponse resp) {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-    }
-
-    private static String getJson(HttpServletRequest req) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader postData = req.getReader();
-        String line;
-        while ((line = postData.readLine()) != null) {
-            sb.append(line);
-        }
-        return sb.toString();
     }
 }

@@ -7,11 +7,11 @@ public final class PropertiesUtil {
     private static final Properties PROPERTIES = new Properties();
     private static final String PROPERTIES_FILE = "db.properties";
 
-    private PropertiesUtil() {
-    }
-
     static {
         loadProperties();
+    }
+
+    private PropertiesUtil() {
     }
 
     public static String getProperties(String key) {

@@ -1,8 +1,8 @@
 package org.example.service.impl;
 
+import org.example.exception.NotFoundException;
 import org.example.model.PhoneNumber;
 import org.example.repository.PhoneNumberRepository;
-import org.example.exception.NotFoundException;
 import org.example.repository.impl.PhoneNumberRepositoryImpl;
 import org.example.service.PhoneNumberService;
 import org.example.servlet.dto.PhoneNumberIncomingDto;
@@ -14,9 +14,9 @@ import org.example.servlet.mapper.impl.PhoneNumberDtoMapperImpl;
 import java.util.List;
 
 public class PhoneNumberServiceImpl implements PhoneNumberService {
-    private final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
     private static final PhoneNumberDtoMapper phoneNumberDtoMapper = PhoneNumberDtoMapperImpl.getInstance();
     private static PhoneNumberService instance;
+    private final PhoneNumberRepository phoneNumberRepository = PhoneNumberRepositoryImpl.getInstance();
 
 
     private PhoneNumberServiceImpl() {

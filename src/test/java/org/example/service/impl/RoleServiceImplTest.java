@@ -18,11 +18,13 @@ import java.util.Optional;
 class RoleServiceImplTest {
     private static RoleService roleService;
     private static RoleRepository mockRoleRepository;
+    private static RoleRepositoryImpl oldInstance;
 
     private static void setMock(RoleRepository mock) {
         try {
             Field instance = RoleRepositoryImpl.class.getDeclaredField("instance");
             instance.setAccessible(true);
+            oldInstance = (RoleRepositoryImpl) instance.get(instance);
             instance.set(instance, mock);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -40,7 +42,7 @@ class RoleServiceImplTest {
     static void afterAll() throws Exception {
         Field instance = RoleRepositoryImpl.class.getDeclaredField("instance");
         instance.setAccessible(true);
-        instance.set(null, null);
+        instance.set(instance, oldInstance);
     }
 
     @BeforeEach
