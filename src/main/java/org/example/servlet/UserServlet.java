@@ -1,7 +1,6 @@
 package org.example.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,7 +64,7 @@ public class UserServlet extends HttpServlet {
         try {
             String[] pathPart = req.getPathInfo().split("/");
             Long userId = Long.parseLong(pathPart[1]);
-            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             userService.delete(userId);
         } catch (NotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -80,7 +79,7 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
         String json = getJson(req);
 
@@ -100,7 +99,7 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
         String json = getJson(req);
 

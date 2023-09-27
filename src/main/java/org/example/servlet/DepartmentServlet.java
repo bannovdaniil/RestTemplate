@@ -1,7 +1,6 @@
 package org.example.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +29,7 @@ public class DepartmentServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
 
         String responseAnswer = "";
@@ -65,7 +64,7 @@ public class DepartmentServlet extends HttpServlet {
         try {
             String[] pathPart = req.getPathInfo().split("/");
             Long departmentId = Long.parseLong(pathPart[1]);
-            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             if (req.getPathInfo().contains("/deleteUser/")) {
                 if ("deleteUser".equals(pathPart[2])) {
                     Long userId = Long.parseLong(pathPart[3]);
@@ -87,7 +86,7 @@ public class DepartmentServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
         String json = getJson(req);
 
@@ -107,7 +106,7 @@ public class DepartmentServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setJsonHeader(resp);
         String json = getJson(req);
 

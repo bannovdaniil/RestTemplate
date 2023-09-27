@@ -64,6 +64,13 @@ class RoleServletTest {
         Mockito.reset(mockRoleService);
     }
 
+    @AfterAll
+    static void afterAll() throws Exception {
+        Field instance = RoleServiceImpl.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
+
     @Test
     void doGetAll() throws IOException {
         Mockito.doReturn("role/all").when(mockRequest).getPathInfo();
@@ -169,7 +176,7 @@ class RoleServletTest {
         Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
         Mockito.doReturn(
                 "{\"id\": 4,\"name\": \"" +
-                        expectedName + "\"}",
+                expectedName + "\"}",
                 null
         ).when(mockBufferedReader).readLine();
 
