@@ -6,10 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.exception.NotFoundException;
 import org.example.service.RoleService;
 import org.example.service.impl.RoleServiceImpl;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -56,13 +53,13 @@ class RoleServletTest {
         Mockito.doReturn(new PrintWriter(Writer.nullWriter())).when(mockResponse).getWriter();
     }
 
-    @AfterAll
-    static void afterAll() {
+    @AfterEach
+    void tearDown() {
         Mockito.reset(mockRoleService);
     }
 
     @Test
-    void doGetAll() throws ServletException, IOException {
+    void doGetAll() throws IOException {
         Mockito.doReturn("role/all").when(mockRequest).getPathInfo();
 
         roleServlet.doGet(mockRequest, mockResponse);
@@ -71,7 +68,7 @@ class RoleServletTest {
     }
 
     @Test
-    void doGetById() throws ServletException, IOException, NotFoundException {
+    void doGetById() throws IOException, NotFoundException {
         Mockito.doReturn("role/2").when(mockRequest).getPathInfo();
 
         roleServlet.doGet(mockRequest, mockResponse);
@@ -80,7 +77,7 @@ class RoleServletTest {
     }
 
     @Test
-    void doGetNotFoundException() throws ServletException, IOException, NotFoundException {
+    void doGetNotFoundException() throws IOException, NotFoundException {
         Mockito.doReturn("role/100").when(mockRequest).getPathInfo();
         Mockito.doThrow(new NotFoundException("not found.")).when(mockRoleService).findById(100L);
 
@@ -90,7 +87,7 @@ class RoleServletTest {
     }
 
     @Test
-    void doGetBadRequest() throws ServletException, IOException, NotFoundException {
+    void doGetBadRequest() throws IOException, NotFoundException {
         Mockito.doReturn("role/2q").when(mockRequest).getPathInfo();
 
         roleServlet.doGet(mockRequest, mockResponse);
@@ -99,11 +96,39 @@ class RoleServletTest {
     }
 
     @Test
-    void doDelete() {
+    void doDelete() throws IOException, NotFoundException {
+        Mockito.doReturn("role/2").when(mockRequest).getPathInfo();
+        Mockito.doReturn(true).when(mockRoleService).delete(Mockito.anyLong());
+
+        roleServlet.doDelete(mockRequest, mockResponse);
+
+        Mockito.verify(mockRoleService).delete(Mockito.anyLong());
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
+    @Test
+    void doDeleteNotFound() throws IOException, NotFoundException {
+        Mockito.doReturn("role/100").when(mockRequest).getPathInfo();
+        Mockito.doThrow(new NotFoundException("not found.")).when(mockRoleService).delete(100L);
+
+        roleServlet.doDelete(mockRequest, mockResponse);
+
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        Mockito.verify(mockRoleService).delete(Mockito.anyLong());
+    }
+
+    @Test
+    void doDeleteBadRequest() throws IOException, NotFoundException {
+        Mockito.doReturn("role/a100").when(mockRequest).getPathInfo();
+
+        roleServlet.doDelete(mockRequest, mockResponse);
+
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
     void doPost() {
+
     }
 
     @Test

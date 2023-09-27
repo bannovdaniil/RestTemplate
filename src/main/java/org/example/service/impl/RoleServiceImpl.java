@@ -38,12 +38,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void update(RoleUpdateDto roleUpdateDto) throws NotFoundException {
-        if (roleRepository.exitsById(roleUpdateDto.getId())) {
-            Role role = roleDtoMapper.map(roleUpdateDto);
-            roleRepository.update(role);
-        } else {
-            throw new NotFoundException("Role not found.");
-        }
+        checkRoleExist(roleUpdateDto.getId());
+        Role role = roleDtoMapper.map(roleUpdateDto);
+        roleRepository.update(role);
     }
 
     @Override
@@ -60,8 +57,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public boolean delete(Long roleId) {
+    public boolean delete(Long roleId) throws NotFoundException {
+        checkRoleExist(roleId);
         return roleRepository.deleteById(roleId);
     }
 
+    private void checkRoleExist(Long roleId) throws NotFoundException {
+        if (!roleRepository.exitsById(roleId)) {
+            throw new NotFoundException("Role not found.");
+        }
+    }
 }

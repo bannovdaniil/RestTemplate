@@ -126,7 +126,7 @@ class RoleServiceImplTest {
     }
 
     @Test
-    void delete() {
+    void delete() throws NotFoundException {
         Long expectedId = 100L;
 
         roleService.delete(expectedId);

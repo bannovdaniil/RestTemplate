@@ -16,5 +16,5 @@ public interface RoleService {
 
     List<RoleOutGoingDto> findAll();
 
-    boolean delete(Long roleId);
+    boolean delete(Long roleId) throws NotFoundException;
 }
