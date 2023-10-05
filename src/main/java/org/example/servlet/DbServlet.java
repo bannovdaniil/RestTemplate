@@ -18,6 +18,7 @@ public class DbServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         StringBuilder sb = new StringBuilder("Create data base:\n\n");
+        sb.append("New version\n");
 
         ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
         sb.append("Create schema\n");
